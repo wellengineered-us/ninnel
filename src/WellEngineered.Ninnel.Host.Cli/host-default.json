@@ -1,0 +1,76 @@
+﻿{
+	"TargetEngineVersion": "0.1.0",
+	"ConfigurationVersion": "1.0.0",
+	"HostAutoWire": false,
+	"__HostFactoryAssemblyQualifiedTypeName": null,
+	"HostAssemblyQualifiedTypeName": "WellEngineered.Ninnel.Hosting.Tool.DefaultToolHost, WellEngineered.Ninnel.Hosting.Tool",
+	"__ContextFactoryAssemblyQualifiedTypeName": null,
+	"ContextAssemblyQualifiedTypeName": "WellEngineered.Ninnel.Hosting.Tool.DefaultToolContext, WellEngineered.Ninnel.Hosting.Tool",
+	"EnableDispatchLoop": true,
+	"DispatchIdleTimeSpan": "00:00:03",
+	"PipelineConfigurations": [
+		{
+			"IsEnabled": true,
+			"PipelineAssemblyQualifiedTypeName": "WellEngineered.Ninnel.Hosting.Tool.DefaultPipeline, WellEngineered.Ninnel.Hosting.Tool",
+			"InletStationConfiguration": {
+				"AssemblyQualifiedTypeName": "WellEngineered.Ninnel.Hosting.Tool.DefaultInletStation, WellEngineered.Ninnel.Hosting.Tool",
+				"Specification": {
+				}
+			},
+			"IntermediateStationConfigurations": [
+				{
+					"AssemblyQualifiedTypeName": "WellEngineered.Ninnel.Hosting.Tool.DefaultIntermediateStation, WellEngineered.Ninnel.Hosting.Tool",
+					"Specification": {
+					}
+				}
+			],
+			"OutletStationConfiguration": {
+				"AssemblyQualifiedTypeName": "WellEngineered.Ninnel.Hosting.Tool.DefaultOutletStation, WellEngineered.Ninnel.Hosting.Tool",
+				"Specification": {
+				}
+			}
+		},
+		{
+			"IsEnabled": true,
+			"PipelineAssemblyQualifiedTypeName": "WellEngineered.Ninnel.Hosting.Tool.DefaultPipeline, WellEngineered.Ninnel.Hosting.Tool",
+			"InletStationConfiguration": {
+				"AssemblyQualifiedTypeName": "WellEngineered.Ninnel.Hosting.Tool.DefaultInletStation, WellEngineered.Ninnel.Hosting.Tool",
+				"Specification": {
+				}
+			},
+			"IntermediateStationConfigurations": [
+				{
+					"AssemblyQualifiedTypeName": "WellEngineered.Ninnel.Hosting.Tool.DefaultIntermediateStation, WellEngineered.Ninnel.Hosting.Tool",
+					"Specification": {
+					}
+				}
+			],
+			"OutletStationConfiguration": {
+				"AssemblyQualifiedTypeName": "WellEngineered.Ninnel.Hosting.Tool.DefaultOutletStation, WellEngineered.Ninnel.Hosting.Tool",
+				"Specification": {
+				}
+			}
+		},
+		{
+			"IsEnabled": true,
+			"PipelineAssemblyQualifiedTypeName": "WellEngineered.Ninnel.Hosting.Tool.DefaultPipeline, WellEngineered.Ninnel.Hosting.Tool",
+			"InletStationConfiguration": {
+				"AssemblyQualifiedTypeName": "WellEngineered.Ninnel.Hosting.Tool.DefaultInletStation, WellEngineered.Ninnel.Hosting.Tool",
+				"Specification": {
+				}
+			},
+			"IntermediateStationConfigurations": [
+				{
+					"AssemblyQualifiedTypeName": "WellEngineered.Ninnel.Hosting.Tool.DefaultIntermediateStation, WellEngineered.Ninnel.Hosting.Tool",
+					"Specification": {
+					}
+				}
+			],
+			"OutletStationConfiguration": {
+				"AssemblyQualifiedTypeName": "WellEngineered.Ninnel.Hosting.Tool.DefaultOutletStation, WellEngineered.Ninnel.Hosting.Tool",
+				"Specification": {
+				}
+			}
+		}
+	]
+}
