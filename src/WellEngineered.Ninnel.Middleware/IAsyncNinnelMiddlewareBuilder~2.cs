@@ -1,14 +1,15 @@
-﻿/*
-	Copyright ©2020-2021 WellEngineered.us, all rights reserved.
+/*
+	Copyright ©2020-2022 WellEngineered.us, all rights reserved.
 	Distributed under the MIT license: http://www.opensource.org/licenses/mit-license.php
 */
 
-using WellEngineered.Ninnel.Primitives.Component;
+#if ASYNC_ALL_THE_WAY_DOWN
+using WellEngineered.Solder.Primitives;
 
 namespace WellEngineered.Ninnel.Middleware
 {
 	public interface IAsyncNinnelMiddlewareBuilder<TData, TComponent>
-		where TComponent : INinnelComponent0
+		where TComponent : IAsyncLifecycle
 	{
 		#region Methods/Operators
 
@@ -19,3 +20,4 @@ namespace WellEngineered.Ninnel.Middleware
 		#endregion
 	}
 }
+#endif

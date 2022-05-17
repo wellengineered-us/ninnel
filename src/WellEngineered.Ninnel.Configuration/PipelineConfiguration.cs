@@ -1,11 +1,10 @@
-﻿/*
-	Copyright ©2020-2021 WellEngineered.us, all rights reserved.
+/*
+	Copyright ©2020-2022 WellEngineered.us, all rights reserved.
 	Distributed under the MIT license: http://www.opensource.org/licenses/mit-license.php
 */
 
 using System;
 using System.Collections.Generic;
-using System.Threading;
 
 using WellEngineered.Ninnel.Primitives.Configuration;
 using WellEngineered.Solder.Configuration;
@@ -13,7 +12,8 @@ using WellEngineered.Solder.Primitives;
 
 namespace WellEngineered.Ninnel.Configuration
 {
-	public class PipelineConfiguration : NinnelConfiguration
+	public partial class PipelineConfiguration
+		: NinnelConfiguration
 	{
 		#region Constructors/Destructors
 
@@ -88,6 +88,19 @@ namespace WellEngineered.Ninnel.Configuration
 			{
 				this.EnsureParentOnPropertySet(this.outletStationConfiguration, value);
 				this.outletStationConfiguration = value;
+			}
+		}
+
+		[SolderConfigurationIgnore]
+		public new HostConfiguration Parent
+		{
+			get
+			{
+				return (HostConfiguration)base.Parent;
+			}
+			set
+			{
+				base.Parent = value;
 			}
 		}
 
@@ -178,11 +191,6 @@ namespace WellEngineered.Ninnel.Configuration
 					yield return childMessage;
 				}
 			}
-		}
-
-		protected override IAsyncEnumerable<IMessage> CoreValidateAsync(object context, CancellationToken cancellationToken = default)
-		{
-			return null;
 		}
 
 		public Type GetPipelineType()

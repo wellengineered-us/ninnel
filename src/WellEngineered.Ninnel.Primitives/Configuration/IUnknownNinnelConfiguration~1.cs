@@ -1,5 +1,5 @@
-﻿/*
-	Copyright ©2020-2021 WellEngineered.us, all rights reserved.
+/*
+	Copyright ©2020-2022 WellEngineered.us, all rights reserved.
 	Distributed under the MIT license: http://www.opensource.org/licenses/mit-license.php
 */
 
@@ -11,7 +11,7 @@ namespace WellEngineered.Ninnel.Primitives.Configuration
 {
 	public interface IUnknownNinnelConfiguration<out TNinnelSpecification>
 		: IUnknownSolderConfiguration<TNinnelSpecification>,
-			INinnelConfiguration
+			IUnknownNinnelConfiguration
 		where TNinnelSpecification : class, INinnelSpecification
 	{
 	}

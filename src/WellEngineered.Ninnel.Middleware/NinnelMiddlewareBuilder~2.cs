@@ -1,5 +1,5 @@
-﻿/*
-	Copyright ©2020-2021 WellEngineered.us, all rights reserved.
+/*
+	Copyright ©2020-2022 WellEngineered.us, all rights reserved.
 	Distributed under the MIT license: http://www.opensource.org/licenses/mit-license.php
 */
 
@@ -7,13 +7,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-using WellEngineered.Ninnel.Primitives.Component;
+using WellEngineered.Solder.Primitives;
 
 namespace WellEngineered.Ninnel.Middleware
 {
 	public sealed class NinnelMiddlewareBuilder<TData, TComponent>
 		: INinnelMiddlewareBuilder<TData, TComponent>
-		where TComponent : INinnelComponent0
+		where TComponent : ILifecycle
 	{
 		#region Constructors/Destructors
 

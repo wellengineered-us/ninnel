@@ -1,11 +1,10 @@
-﻿/*
-	Copyright ©2020-2021 WellEngineered.us, all rights reserved.
+/*
+	Copyright ©2020-2022 WellEngineered.us, all rights reserved.
 	Distributed under the MIT license: http://www.opensource.org/licenses/mit-license.php
 */
 
 using System;
 using System.Collections.Generic;
-using System.Threading;
 
 using WellEngineered.Ninnel.Primitives;
 using WellEngineered.Ninnel.Primitives.Configuration;
@@ -14,7 +13,8 @@ using WellEngineered.Solder.Primitives;
 
 namespace WellEngineered.Ninnel.Configuration
 {
-	public class HostConfiguration : NinnelConfiguration
+	public partial class HostConfiguration
+		: NinnelConfiguration
 	{
 		#region Constructors/Destructors
 
@@ -36,13 +36,13 @@ namespace WellEngineered.Ninnel.Configuration
 		#region Fields/Constants
 
 		private static readonly Version currentConfigurationVersion = Version.Parse("1.0.0");
-		private static readonly Version currentEngineVersion = Version.Parse("0.1.0");
+		private static readonly Version currentEngineVersion = Version.Parse("0.9.0");
 		private static readonly Version minimumConfigurationVersion = Version.Parse("1.0.0");
 		private readonly ISolderConfigurationCollection<PipelineConfiguration> pipelineConfigurations;
+		private bool? componentAutoWire;
 		private string configurationVersion;
 		private string contextAssemblyQualifiedTypeName;
 		private string hostAssemblyQualifiedTypeName;
-		private bool? hostAutoWire;
 		private string targetEngineVersion;
 
 		#endregion
@@ -78,6 +78,18 @@ namespace WellEngineered.Ninnel.Configuration
 			get
 			{
 				return this.pipelineConfigurations;
+			}
+		}
+
+		public bool? ComponentAutoWire
+		{
+			get
+			{
+				return this.componentAutoWire;
+			}
+			set
+			{
+				this.componentAutoWire = value;
 			}
 		}
 
@@ -117,18 +129,6 @@ namespace WellEngineered.Ninnel.Configuration
 			}
 		}
 
-		public bool? HostAutoWire
-		{
-			get
-			{
-				return this.hostAutoWire;
-			}
-			set
-			{
-				this.hostAutoWire = value;
-			}
-		}
-
 		public string TargetEngineVersion
 		{
 			get
@@ -148,7 +148,7 @@ namespace WellEngineered.Ninnel.Configuration
 		protected override IEnumerable<IMessage> CoreValidate(object context)
 		{
 			Type ninnelHostType;
-			Type ninnelContextType;
+			//Type ninnelContextType;
 
 			if ((object)MinimumConfigurationVersion == null ||
 				(object)CurrentConfigurationVersion == null)
@@ -216,11 +216,6 @@ namespace WellEngineered.Ninnel.Configuration
 					yield return childMessage;
 				}
 			}
-		}
-
-		protected override IAsyncEnumerable<IMessage> CoreValidateAsync(object context, CancellationToken cancellationToken = default)
-		{
-			return null;
 		}
 
 		public Type GetContextType()

@@ -1,20 +1,21 @@
-﻿/*
-	Copyright ©2020-2021 WellEngineered.us, all rights reserved.
+/*
+	Copyright ©2020-2022 WellEngineered.us, all rights reserved.
 	Distributed under the MIT license: http://www.opensource.org/licenses/mit-license.php
 */
 
+#if ASYNC_ALL_THE_WAY_DOWN
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-using WellEngineered.Ninnel.Primitives.Component;
+using WellEngineered.Solder.Primitives;
 
 namespace WellEngineered.Ninnel.Middleware
 {
 	public sealed class AsyncNinnelMiddlewareBuilder<TData, TComponent>
 		: IAsyncNinnelMiddlewareBuilder<TData, TComponent>
-		where TComponent : INinnelComponent0
+		where TComponent : IAsyncLifecycle
 	{
 		#region Constructors/Destructors
 
@@ -76,3 +77,4 @@ namespace WellEngineered.Ninnel.Middleware
 		#endregion
 	}
 }
+#endif

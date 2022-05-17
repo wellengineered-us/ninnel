@@ -1,11 +1,10 @@
-﻿/*
-	Copyright ©2020-2021 WellEngineered.us, all rights reserved.
+/*
+	Copyright ©2020-2022 WellEngineered.us, all rights reserved.
 	Distributed under the MIT license: http://www.opensource.org/licenses/mit-license.php
 */
 
 using System;
 using System.Collections.Generic;
-using System.Threading;
 
 using WellEngineered.Ninnel.Primitives.Configuration;
 using WellEngineered.Solder.Configuration;
@@ -13,7 +12,8 @@ using WellEngineered.Solder.Primitives;
 
 namespace WellEngineered.Ninnel.Configuration
 {
-	public class FieldConfiguration : NinnelConfiguration
+	public partial class FieldConfiguration
+		: NinnelConfiguration
 	{
 		#region Constructors/Destructors
 
@@ -62,19 +62,8 @@ namespace WellEngineered.Ninnel.Configuration
 
 		protected override IEnumerable<IMessage> CoreValidate(object context)
 		{
-			List<Message> messages;
-
-			messages = new List<Message>();
-
 			if (string.IsNullOrWhiteSpace(this.FieldName))
-				messages.Add(new Message(string.Empty, string.Format("{0} name is required.", context), Severity.Error));
-
-			return messages;
-		}
-
-		protected override IAsyncEnumerable<IMessage> CoreValidateAsync(object context, CancellationToken cancellationToken = default)
-		{
-			return null;
+				yield return new Message(string.Empty, string.Format("{0} name is required.", context), Severity.Error);
 		}
 
 		public override bool Equals(object obj)

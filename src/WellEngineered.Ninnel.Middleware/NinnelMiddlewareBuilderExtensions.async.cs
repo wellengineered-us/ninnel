@@ -1,12 +1,15 @@
 /*
-	Copyright ©2020-2021 WellEngineered.us, all rights reserved.
+	Copyright ©2020-2022 WellEngineered.us, all rights reserved.
 	Distributed under the MIT license: http://www.opensource.org/licenses/mit-license.php
 */
 
+#if ASYNC_ALL_THE_WAY_DOWN
 using System;
 
 using WellEngineered.Ninnel.Primitives.Component;
 using WellEngineered.Ninnel.Primitives.Configuration;
+using WellEngineered.Solder.Injection;
+using WellEngineered.Solder.Primitives;
 
 namespace WellEngineered.Ninnel.Middleware
 {
@@ -14,15 +17,15 @@ namespace WellEngineered.Ninnel.Middleware
 	{
 		#region Methods/Operators
 
-		public static IAsyncNinnelMiddlewareBuilder<TData, TComponent> FromAsync<TData, TComponent, TConfiguration>(this IAsyncNinnelMiddlewareBuilder<TData, TComponent> ninnelMiddlewareBuilder, Type ninnelMiddlewareClass, TConfiguration ninnelMiddlewareConfiguration)
-			where TComponent : INinnelComponent0
+		public static IAsyncNinnelMiddlewareBuilder<TData, TComponent> FromAsync<TData, TComponent, TConfiguration>(this IAsyncNinnelMiddlewareBuilder<TData, TComponent> ninnelMiddlewareBuilder, Type ninnelMiddlewareType, TConfiguration ninnelMiddlewareConfiguration, bool autoWire)
+			where TComponent : IAsyncLifecycle
 			where TConfiguration : class, INinnelConfiguration
 		{
 			if (ninnelMiddlewareBuilder == null)
 				throw new ArgumentNullException(nameof(ninnelMiddlewareBuilder));
 
-			if (ninnelMiddlewareClass == null)
-				throw new ArgumentNullException(nameof(ninnelMiddlewareClass));
+			if (ninnelMiddlewareType == null)
+				throw new ArgumentNullException(nameof(ninnelMiddlewareType));
 
 			if (ninnelMiddlewareConfiguration == null)
 				throw new ArgumentNullException(nameof(ninnelMiddlewareConfiguration));
@@ -32,23 +35,25 @@ namespace WellEngineered.Ninnel.Middleware
 														return async (data, target) =>
 																{
 																	TComponent newTarget;
-																	Type _ninnelMiddlewareClass = ninnelMiddlewareClass; // prevent closure bug
+																	Type _ninnelMiddlewareType = ninnelMiddlewareType; // prevent closure bug
 																	TConfiguration _ninnelMiddlewareConfiguration = ninnelMiddlewareConfiguration; // prevent closure bug
-																	INinnelMiddleware<TData, TComponent, TConfiguration> ninnelMiddleware;
+																	bool _autoWire = autoWire; // prevent closure bug
+																	IAsyncNinnelMiddleware<TData, TComponent, TConfiguration> ninnelMiddleware;
 
 																	if (data == null)
 																		throw new ArgumentNullException(nameof(data));
 
-																	if (target == null)
-																		throw new ArgumentNullException(nameof(target));
+																	//if (target == null)
+																	//throw new ArgumentNullException(nameof(target));
 
-																	if (_ninnelMiddlewareClass == null)
-																		throw new InvalidOperationException(nameof(_ninnelMiddlewareClass));
+																	if (_ninnelMiddlewareType == null)
+																		throw new InvalidOperationException(nameof(_ninnelMiddlewareType));
 
 																	if (_ninnelMiddlewareConfiguration == null)
 																		throw new InvalidOperationException(nameof(_ninnelMiddlewareConfiguration));
 
-																	ninnelMiddleware = (INinnelMiddleware<TData, TComponent, TConfiguration>)Activator.CreateInstance(_ninnelMiddlewareClass);
+																	// TODO - Fix this
+																	ninnelMiddleware = new DefaultComponentFactory().CreateNinnelComponent<IAsyncNinnelMiddleware<TData, TComponent, TConfiguration>>(AssemblyDomain.Default.DependencyManager, _ninnelMiddlewareType, autoWire);
 
 																	if ((object)ninnelMiddleware == null)
 																		throw new InvalidOperationException(nameof(ninnelMiddleware));
@@ -67,8 +72,8 @@ namespace WellEngineered.Ninnel.Middleware
 													});
 		}
 
-		public static IAsyncNinnelMiddlewareBuilder<TData, TComponent> WithAsync<TData, TComponent, TConfiguration>(this IAsyncNinnelMiddlewareBuilder<TData, TComponent> ninnelMiddlewareBuilder, INinnelMiddleware<TData, TComponent, TConfiguration> ninnelMiddleware)
-			where TComponent : INinnelComponent0
+		public static IAsyncNinnelMiddlewareBuilder<TData, TComponent> WithAsync<TData, TComponent, TConfiguration>(this IAsyncNinnelMiddlewareBuilder<TData, TComponent> ninnelMiddlewareBuilder, IAsyncNinnelMiddleware<TData, TComponent, TConfiguration> ninnelMiddleware)
+			where TComponent : IAsyncLifecycle
 			where TConfiguration : class, INinnelConfiguration
 		{
 			if (ninnelMiddlewareBuilder == null)
@@ -82,23 +87,26 @@ namespace WellEngineered.Ninnel.Middleware
 														return async (data, target) =>
 																{
 																	TComponent newTarget;
-																	INinnelMiddleware<TData, TComponent, TConfiguration> _ninnelMiddleware = ninnelMiddleware; // prevent closure bug
+																	IAsyncNinnelMiddleware<TData, TComponent, TConfiguration> _ninnelMiddleware = ninnelMiddleware; // prevent closure bug
 
 																	if (data == null)
 																		throw new ArgumentNullException(nameof(data));
 
-																	if (target == null)
-																		throw new ArgumentNullException(nameof(target));
+																	//if (target == null)
+																	//throw new ArgumentNullException(nameof(target));
 
 																	if (_ninnelMiddleware == null)
 																		throw new InvalidOperationException(nameof(_ninnelMiddleware));
 
-																	if (!_ninnelMiddleware.IsCreated || _ninnelMiddleware.IsDisposed)
-																		newTarget = default;
-																	else
-																		newTarget = await _ninnelMiddleware.ProcessAsync(data, target, next);
+																	await using (ninnelMiddleware)
+																	{
+																		if (!_ninnelMiddleware.IsAsyncCreated || _ninnelMiddleware.IsAsyncDisposed)
+																			newTarget = default;
+																		else
+																			newTarget = await _ninnelMiddleware.ProcessAsync(data, target, next);
 
-																	return newTarget;
+																		return newTarget;
+																	}
 																};
 													});
 		}
@@ -106,3 +114,4 @@ namespace WellEngineered.Ninnel.Middleware
 		#endregion
 	}
 }
+#endif

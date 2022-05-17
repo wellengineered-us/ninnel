@@ -1,17 +1,16 @@
 /*
-	Copyright ©2020-2021 WellEngineered.us, all rights reserved.
+	Copyright ©2020-2022 WellEngineered.us, all rights reserved.
 	Distributed under the MIT license: http://www.opensource.org/licenses/mit-license.php
 */
 
 using System;
 
-using WellEngineered.Ninnel.Primitives.Component;
+using WellEngineered.Solder.Primitives;
 
 namespace WellEngineered.Ninnel.Middleware
 {
-	public sealed partial class NinnelMiddlewareClosure<TData, TComponent>
-		where TComponent
-		: INinnelComponent0
+	public sealed class NinnelMiddlewareClosure<TData, TComponent>
+		where TComponent : ILifecycle
 	{
 		#region Constructors/Destructors
 
@@ -71,7 +70,7 @@ namespace WellEngineered.Ninnel.Middleware
 
 		private TComponent Transform(TData data, TComponent target)
 		{
-			Console.WriteLine("voo doo!");
+			//Console.WriteLine("voo doo!");
 			return this.ProcessToNext(data, target, this.Next);
 		}
 
