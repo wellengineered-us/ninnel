@@ -17,7 +17,7 @@ namespace WellEngineered.Ninnel.Primitives.Component
 	{
 		#region Methods/Operators
 
-		protected override async ValueTask<TNinnelComponent> CoreCreateNinnelComponentAsync<TNinnelComponent>(IDependencyManager dependencyManager, Type ninnelComponentType, bool autoWire, CancellationToken cancellationToken = default)
+		protected override async ValueTask<TNinnelComponent> CoreCreateNinnelComponentAsync<TNinnelComponent>(IDependencyManager dependencyManager, Type ninnelComponentType, bool autoWire, string selectorKey = null, bool throwOnError = true, CancellationToken cancellationToken = default)
 		{
 			TNinnelComponent ninnelComponent;
 
@@ -27,7 +27,7 @@ namespace WellEngineered.Ninnel.Primitives.Component
 			if ((object)ninnelComponentType == null)
 				throw new ArgumentNullException(nameof(ninnelComponentType));
 
-			ninnelComponent = ninnelComponentType.GetObjectAssignableToTargetType<TNinnelComponent>(dependencyManager, autoWire);
+			ninnelComponent = ninnelComponentType.GetObjectAssignableToTargetType<TNinnelComponent>(dependencyManager, autoWire, selectorKey, throwOnError);
 
 			if ((object)ninnelComponent == null)
 				throw new NinnelException(string.Format("Failed to instantiate ninnel component type: '{0}', auto-wire: {1}.", ninnelComponentType.FullName, autoWire));

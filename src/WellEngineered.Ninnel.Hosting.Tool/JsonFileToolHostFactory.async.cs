@@ -69,7 +69,7 @@ namespace WellEngineered.Ninnel.Hosting.Tool
 
 			autoWire = toolHostConfiguration.ComponentAutoWire ?? true;
 			// TODO - Fix this
-			ninnelToolHost = await new DefaultComponentFactory().CreateNinnelComponentAsync<INinnelToolHost>(AssemblyDomain.Default.DependencyManager, ninnelToolHostType, autoWire, cancellationToken);
+			ninnelToolHost = await new DefaultComponentFactory().CreateNinnelComponentAsync<INinnelToolHost>(AssemblyDomain.Default.DependencyManager, ninnelToolHostType, autoWire, null, true, cancellationToken);
 
 			if ((object)ninnelToolHost == null)
 				throw new NinnelException(string.Format("Failed to instantiate tool host type: '{0}', auto-wire: {1}.", toolHostConfiguration.HostAssemblyQualifiedTypeName, autoWire));

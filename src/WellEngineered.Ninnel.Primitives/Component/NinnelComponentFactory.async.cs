@@ -19,10 +19,10 @@ namespace WellEngineered.Ninnel.Primitives.Component
 	{
 		#region Methods/Operators
 
-		protected abstract ValueTask<TNinnelComponent> CoreCreateNinnelComponentAsync<TNinnelComponent>(IDependencyManager dependencyManager, Type ninnelComponentType, bool autoWire, CancellationToken cancellationToken = default)
+		protected abstract ValueTask<TNinnelComponent> CoreCreateNinnelComponentAsync<TNinnelComponent>(IDependencyManager dependencyManager, Type ninnelComponentType, bool autoWire, string selectorKey = null, bool throwOnError = true, CancellationToken cancellationToken = default)
 			where TNinnelComponent : INinnelComponent0;
 
-		public async ValueTask<TNinnelComponent> CreateNinnelComponentAsync<TNinnelComponent>(IDependencyManager dependencyManager, Type ninnelComponentType, bool autoWire, CancellationToken cancellationToken = default)
+		public async ValueTask<TNinnelComponent> CreateNinnelComponentAsync<TNinnelComponent>(IDependencyManager dependencyManager, Type ninnelComponentType, bool autoWire, string selectorKey = null, bool throwOnError = true, CancellationToken cancellationToken = default)
 			where TNinnelComponent : INinnelComponent0
 		{
 			if ((object)dependencyManager == null)
@@ -33,7 +33,7 @@ namespace WellEngineered.Ninnel.Primitives.Component
 
 			try
 			{
-				return await this.CoreCreateNinnelComponentAsync<TNinnelComponent>(dependencyManager, ninnelComponentType, autoWire, cancellationToken);
+				return await this.CoreCreateNinnelComponentAsync<TNinnelComponent>(dependencyManager, ninnelComponentType, autoWire, selectorKey, throwOnError, cancellationToken);
 			}
 			catch (Exception ex)
 			{

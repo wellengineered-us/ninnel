@@ -16,10 +16,10 @@ namespace WellEngineered.Ninnel.Primitives.Component
 	{
 		#region Methods/Operators
 
-		protected abstract TNinnelComponent CoreCreateNinnelComponent<TNinnelComponent>(IDependencyManager dependencyManager, Type ninnelComponentType, bool autoWire)
+		protected abstract TNinnelComponent CoreCreateNinnelComponent<TNinnelComponent>(IDependencyManager dependencyManager, Type ninnelComponentType, bool autoWire, string selectorKey = null, bool throwOnError = true)
 			where TNinnelComponent : INinnelComponent0;
 
-		public TNinnelComponent CreateNinnelComponent<TNinnelComponent>(IDependencyManager dependencyManager, Type ninnelComponentType, bool autoWire)
+		public TNinnelComponent CreateNinnelComponent<TNinnelComponent>(IDependencyManager dependencyManager, Type ninnelComponentType, bool autoWire, string selectorKey = null, bool throwOnError = true)
 			where TNinnelComponent : INinnelComponent0
 		{
 			if ((object)dependencyManager == null)
@@ -30,7 +30,7 @@ namespace WellEngineered.Ninnel.Primitives.Component
 
 			try
 			{
-				return this.CoreCreateNinnelComponent<TNinnelComponent>(dependencyManager, ninnelComponentType, autoWire);
+				return this.CoreCreateNinnelComponent<TNinnelComponent>(dependencyManager, ninnelComponentType, autoWire, selectorKey, throwOnError);
 			}
 			catch (Exception ex)
 			{

@@ -6,6 +6,7 @@
 #if ASYNC_ALL_THE_WAY_DOWN
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -78,7 +79,7 @@ namespace WellEngineered.Ninnel.Hosting.Tool.Defaults
 		protected override async ValueTask<INinnelPipeline> CoreCreatePipelineAsync(Type ninnelPipelineType, CancellationToken cancellationToken = default)
 		{
 			// TODO - Fix this
-			return await new DefaultComponentFactory().CreateNinnelComponentAsync<INinnelPipeline>(AssemblyDomain.Default.DependencyManager, ninnelPipelineType, (this.Configuration.ComponentAutoWire ?? true), cancellationToken);
+			return await new DefaultComponentFactory().CreateNinnelComponentAsync<INinnelPipeline>(AssemblyDomain.Default.DependencyManager, ninnelPipelineType, (this.Configuration.ComponentAutoWire ?? true), null, true, cancellationToken);
 		}
 
 		protected override async ValueTask CoreDisposeAsync(bool disposing, CancellationToken cancellationToken = default)
@@ -157,44 +158,48 @@ namespace WellEngineered.Ninnel.Hosting.Tool.Defaults
 					await this.CoreMaybeDispatchIdleAsync(cancellationToken);
 				}
 
+				int pipelineCount = this.Configuration.PipelineConfigurations.Count(pc => pc.IsEnabled ?? false);
+				Guid? __ = Guid.Empty;
+				
 				await this.CoreMaybeDispatchBeforeAsync(cancellationToken);
 
-				int pipelineCount = this.Configuration.PipelineConfigurations.Count;
-				Guid? __ = Guid.Empty;
-				//await using (IDisposableDispatch<SemaphoreSlim> semaphoreSlim = AssemblyDomain.Default.ResourceManager.UsingAsync(__, new SemaphoreSlim(0, pipelineCount)))
+				if (pipelineCount > 0)
 				{
-					foreach (PipelineConfiguration pipelineConfiguration in this.Configuration.PipelineConfigurations)
+					//await using (IDisposableDispatch<SemaphoreSlim> semaphoreSlim = AssemblyDomain.Default.ResourceManager.UsingAsync(__, new SemaphoreSlim(0, pipelineCount)))
 					{
-						Type ninnelPipelineType;
+						foreach (PipelineConfiguration pipelineConfiguration in this.Configuration.PipelineConfigurations)
+						{
+							Type ninnelPipelineType;
 
-						if ((object)pipelineConfiguration == null)
-							continue;
+							if ((object)pipelineConfiguration == null)
+								continue;
 
-						if (!(pipelineConfiguration.IsEnabled ?? false))
-							continue;
+							if (!(pipelineConfiguration.IsEnabled ?? false))
+								continue;
 
-						ninnelPipelineType = pipelineConfiguration.GetPipelineType();
+							ninnelPipelineType = pipelineConfiguration.GetPipelineType();
 
-						if ((object)ninnelPipelineType == null)
-							throw new NinnelException(nameof(ninnelPipelineType));
+							if ((object)ninnelPipelineType == null)
+								throw new NinnelException(nameof(ninnelPipelineType));
 
-						await Console.Out.WriteLineAsync("dispatch_loop: execute...");
+							await Console.Out.WriteLineAsync("dispatch_loop: execute...");
 
-						await this.CoreExecutePipelineOnceAsync(ninnelPipelineType, pipelineConfiguration, cancellationToken);
-					}
+							await this.CoreExecutePipelineOnceAsync(ninnelPipelineType, pipelineConfiguration, cancellationToken);
+						}
 
-					//semaphoreSlim.Wait(this.CancellationTokenSource.Token);
+						//semaphoreSlim.Wait(this.CancellationTokenSource.Token);
 
-					//using (CancellationTokenSource ctsDie = new CancellationTokenSource())
-					{
-						//TimeSpan gracefulShutdownTimeSpan;
+						//using (CancellationTokenSource ctsDie = new CancellationTokenSource())
+						{
+							//TimeSpan gracefulShutdownTimeSpan;
 
-						//gracefulShutdownTimeSpan = this.Configuration.GracefulShutdownTimeSpan ??
-						//new TimeSpan(0, 0, 0, 5, 0);
+							//gracefulShutdownTimeSpan = this.Configuration.GracefulShutdownTimeSpan ??
+							//new TimeSpan(0, 0, 0, 5, 0);
 
-						//ctsDie.CancelAfter(gracefulShutdownTimeSpan);
-						//semaphoreSlim.Wait(ctsDie.Token);
-						//semaphoreSlim.Target.Wait();
+							//ctsDie.CancelAfter(gracefulShutdownTimeSpan);
+							//semaphoreSlim.Wait(ctsDie.Token);
+							//semaphoreSlim.Target.Wait();
+						}
 					}
 				}
 

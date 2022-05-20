@@ -6,6 +6,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
+using System.Threading;
+using System.Threading.Tasks;
 
 using WellEngineered.Ninnel.Configuration;
 using WellEngineered.Ninnel.Context;
@@ -16,7 +19,9 @@ using WellEngineered.Ninnel.Primitives.Component;
 using WellEngineered.Ninnel.Primitives.Configuration;
 using WellEngineered.Ninnel.Station;
 using WellEngineered.Ninnel.Transport;
+using WellEngineered.Solder.Configuration;
 using WellEngineered.Solder.Injection;
+using WellEngineered.Solder.Primitives;
 
 namespace WellEngineered.Ninnel.Hosting.Tool.Defaults
 {
@@ -115,18 +120,13 @@ namespace WellEngineered.Ninnel.Hosting.Tool.Defaults
 					processorBuilder = new NinnelMiddlewareBuilder<NinnelStationFrame, INinnelStream>();
 					//processorBuilder0 = new NinnelMiddlewareBuilder<object, ILifecycle>();
 
-					if (true)
+					if (this.Configuration.DemoMode ?? false)
 					{
 						// object instance
-						INinnelMiddleware<NinnelStationFrame, INinnelStream, IUnknownNinnelConfiguration> middleware = new _Middleware();
-						middleware.Configuration = new UnknownNinnelConfiguration();
-						middleware.Create();
-						processorBuilder.With(middleware);
-
-						//INinnelMiddleware middleware0 = new _Middleware0();
-						//middleware0.Configuration = new UnknownNinnelConfiguration();
-						//middleware0.Create();
-						//processorBuilder0.With(middleware0);
+						INinnelIntermediateStation<_Specification> intermediateStation = new _IntermediateStation2();
+						((IConfigurable<IUnknownNinnelConfiguration<_Specification>>)intermediateStation).Configuration = new UnknownNinnelConfiguration<_Specification>(new UnknownNinnelConfiguration());
+						intermediateStation.Create();
+						processorBuilder.With<NinnelStationFrame, INinnelStream, IUnknownNinnelConfiguration<_Specification>>(intermediateStation);
 
 						// regular method
 						processorBuilder.Use(this.TestMiddlewareMethod);
@@ -136,10 +136,17 @@ namespace WellEngineered.Ninnel.Hosting.Tool.Defaults
 						{
 							INinnelStream _processor(NinnelStationFrame _data, INinnelStream _target)
 							{
-								Console.WriteLine("local method BEFORE");
-								var retval = (object)_next != null ? _next(_data, _target) : _target;
-								Console.WriteLine("local method AFTER");
-								return retval;
+								try
+								{
+									Console.WriteLine("local method BEFORE");
+									var retval = (object)_next != null ? _next(_data, _target) : _target;
+									Console.WriteLine("local method AFTER");
+									return retval;
+								}
+								catch (Exception ex)
+								{
+									throw new NinnelException(string.Format("The local method middleware failed (see inner exception)."), ex);
+								}
 							}
 
 							return _processor;
@@ -152,14 +159,21 @@ namespace WellEngineered.Ninnel.Hosting.Tool.Defaults
 											{
 												return (_data, _target) =>
 														{
-															Console.WriteLine("lambda expression BEFORE");
-															var retval = (object)next != null ? next(_data, _target) : _target;
-															Console.WriteLine("lambda expression AFTER");
-															return retval;
+															try
+															{
+																Console.WriteLine("lambda expression BEFORE");
+																var retval = (object)next != null ? next(_data, _target) : _target;
+																Console.WriteLine("lambda expression AFTER");
+																return retval;
+															}
+															catch (Exception ex)
+															{
+																throw new NinnelException(string.Format("The lambda expression middleware failed (see inner exception)."), ex);
+															}
 														};
 											});
 					}
-
+					
 					// by processor class (reflection)
 					foreach (KeyValuePair<IUnknownNinnelConfiguration, Type> middlewareConfigTypeMapping in middlewareConfigTypeMappings)
 					{
@@ -169,7 +183,8 @@ namespace WellEngineered.Ninnel.Hosting.Tool.Defaults
 						if ((object)middlewareConfigTypeMapping.Value == null)
 							throw new InvalidOperationException(nameof(middlewareConfigTypeMapping.Value));
 
-						processorBuilder.From(middlewareConfigTypeMapping.Value, middlewareConfigTypeMapping.Key, this.Configuration.Parent.ComponentAutoWire ?? true);
+						// here is the issue:
+						processorBuilder.From(middlewareConfigTypeMapping.Value, middlewareConfigTypeMapping.Key, this.Configuration.Parent.ComponentAutoWire ?? true, null, true);
 					}
 
 					process = processorBuilder.Build();
@@ -219,57 +234,7 @@ namespace WellEngineered.Ninnel.Hosting.Tool.Defaults
 
 		private INinnelStream TestMiddlewareMethod(NinnelStationFrame data, INinnelStream target, NinnelMiddlewareDelegate<NinnelStationFrame, INinnelStream> next)
 		{
-			INinnelStream newNinnelStream;
-
-			if ((object)data.NinnelContext == null)
-				throw new NinnelException(nameof(data.NinnelContext));
-
-			if ((object)data.RecordConfiguration == null)
-				throw new NinnelException(nameof(data.RecordConfiguration));
-
-			Console.WriteLine("regular method BEFORE");
-
-			if ((object)next != null)
-				newNinnelStream = next(data, target);
-			else
-				newNinnelStream = target;
-
-			Console.WriteLine("regular method AFTER");
-
-			return newNinnelStream;
-		}
-
-		#endregion
-
-		#region Classes/Structs/Interfaces/Enums/Delegates
-
-		/*private class _Middleware0 : NinnelMiddleware
-		{
-			protected override ILifecycle CoreProcess0(object data, ILifecycle target, NinnelMiddlewareDelegate next)
-			{
-				ILifecycle newNinnelStream;
-
-				if ((object)data == null)
-					throw new NinnelException(nameof(data));
-			
-				Console.WriteLine("object instance0 BEFORE");
-
-				if ((object)next != null)
-					newNinnelStream = next(data, target);
-				else
-					newNinnelStream = target;
-
-				Console.WriteLine("object instance0 AFTER");
-
-				return newNinnelStream;
-			}
-		}*/
-
-		private class _Middleware : NinnelMiddleware<NinnelStationFrame, INinnelStream, IUnknownNinnelConfiguration>
-		{
-			#region Methods/Operators
-
-			protected override INinnelStream CoreProcess(NinnelStationFrame data, INinnelStream target, NinnelMiddlewareDelegate<NinnelStationFrame, INinnelStream> next)
+			try
 			{
 				INinnelStream newNinnelStream;
 
@@ -279,19 +244,187 @@ namespace WellEngineered.Ninnel.Hosting.Tool.Defaults
 				if ((object)data.RecordConfiguration == null)
 					throw new NinnelException(nameof(data.RecordConfiguration));
 
-				Console.WriteLine("object instance BEFORE");
+				Console.WriteLine("regular method BEFORE");
 
 				if ((object)next != null)
 					newNinnelStream = next(data, target);
 				else
 					newNinnelStream = target;
 
-				Console.WriteLine("object instance AFTER");
+				Console.WriteLine("regular method AFTER");
 
 				return newNinnelStream;
 			}
+			catch (Exception ex)
+			{
+				throw new NinnelException(string.Format("The regular method middleware failed (see inner exception)."), ex);
+			}
+		}
 
-			#endregion
+		#endregion
+	}
+
+	public class _IntermediateStation2 : NinnelIntermediateStation<_Specification>
+	{
+		#region Methods/Operators
+
+		protected override ValueTask<IAsyncNinnelStream> CoreProcessAsync(NinnelStationFrame ninnelStationFrame, IAsyncNinnelStream asyncNinnelStream, AsyncNinnelMiddlewareDelegate<NinnelStationFrame, IAsyncNinnelStream> next, CancellationToken cancellationToken = default)
+		{
+			return default;
+		}
+
+		protected override INinnelStream CoreProcess(NinnelStationFrame data, INinnelStream target, NinnelMiddlewareDelegate<NinnelStationFrame, INinnelStream> next)
+		{
+			INinnelStream newNinnelStream;
+
+			if ((object)data.NinnelContext == null)
+				throw new NinnelException(nameof(data.NinnelContext));
+
+			if ((object)data.RecordConfiguration == null)
+				throw new NinnelException(nameof(data.RecordConfiguration));
+
+			Console.WriteLine("INTERMEDIATE STATION object instance BEFORE");
+
+			if ((object)next != null)
+				newNinnelStream = next(data, target);
+			else
+				newNinnelStream = target;
+
+			Console.WriteLine("INTERMEDIATE STATION object instance AFTER");
+
+			return newNinnelStream;
+		}
+
+		#endregion
+
+		protected override IUnknownSolderConfiguration<_Specification> CoreCreateGenericTypedUnknownConfiguration(IUnknownSolderConfiguration untypedUnknownSolderConfiguration)
+		{
+			return new UnknownNinnelConfiguration<_Specification>(untypedUnknownSolderConfiguration);
+		}
+
+		protected override ValueTask CorePreExecuteAsync(NinnelStationFrame ninnelStationFrame, CancellationToken cancellationToken = default)
+		{
+			return default;
+		}
+
+		protected override ValueTask CorPostExecuteAsync(NinnelStationFrame ninnelStationFrame, CancellationToken cancellationToken = default)
+		{
+			return default;
+		}
+
+		protected override void CorePostExecute(NinnelStationFrame ninnelStationFrame)
+		{
+		}
+
+		protected override void CorePreExecute(NinnelStationFrame ninnelStationFrame)
+		{
+		}
+	}
+	
+	public class _IntermediateStation : NinnelIntermediateStation<_Specification>
+	{
+		#region Methods/Operators
+
+		protected override ValueTask<IAsyncNinnelStream> CoreProcessAsync(NinnelStationFrame ninnelStationFrame, IAsyncNinnelStream asyncNinnelStream, AsyncNinnelMiddlewareDelegate<NinnelStationFrame, IAsyncNinnelStream> next, CancellationToken cancellationToken = default)
+		{
+			return default;
+		}
+
+		protected override INinnelStream CoreProcess(NinnelStationFrame data, INinnelStream target, NinnelMiddlewareDelegate<NinnelStationFrame, INinnelStream> next)
+		{
+			INinnelStream newNinnelStream;
+
+			if ((object)data.NinnelContext == null)
+				throw new NinnelException(nameof(data.NinnelContext));
+
+			if ((object)data.RecordConfiguration == null)
+				throw new NinnelException(nameof(data.RecordConfiguration));
+
+			Console.WriteLine("INTERMEDIATE STATION BEFORE");
+
+			if ((object)next != null)
+				newNinnelStream = next(data, target);
+			else
+				newNinnelStream = target;
+
+			Console.WriteLine("INTERMEDIATE STATION AFTER");
+
+			return newNinnelStream;
+		}
+
+		#endregion
+
+		protected override IUnknownSolderConfiguration<_Specification> CoreCreateGenericTypedUnknownConfiguration(IUnknownSolderConfiguration untypedUnknownSolderConfiguration)
+		{
+			return new UnknownNinnelConfiguration<_Specification>(untypedUnknownSolderConfiguration);
+		}
+
+		protected override ValueTask CorePreExecuteAsync(NinnelStationFrame ninnelStationFrame, CancellationToken cancellationToken = default)
+		{
+			return default;
+		}
+
+		protected override ValueTask CorPostExecuteAsync(NinnelStationFrame ninnelStationFrame, CancellationToken cancellationToken = default)
+		{
+			return default;
+		}
+
+		protected override void CorePostExecute(NinnelStationFrame ninnelStationFrame)
+		{
+		}
+
+		protected override void CorePreExecute(NinnelStationFrame ninnelStationFrame)
+		{
+		}
+	}
+	
+	public sealed partial class _Specification
+		: NinnelSpecification
+	{
+		#region Constructors/Destructors
+
+		public _Specification()
+		{
+		}
+
+		#endregion
+
+		#region Fields/Constants
+
+		private string __;
+
+		#endregion
+
+		#region Properties/Indexers/Events
+
+		public string _
+		{
+			get
+			{
+				return this.__;
+			}
+			set
+			{
+				this.__ = value;
+			}
+		}
+
+		#endregion
+
+		#region Methods/Operators
+
+		protected override IEnumerable<IMessage> CoreValidate(object context)
+		{
+			if (string.IsNullOrWhiteSpace(this._))
+				yield return new Message(String.Empty, string.Format("Specification requires property '{0}' to be set to any non-whitespace value.", nameof(this.__)), Severity.Error);
+		}
+		
+		protected override async IAsyncEnumerable<IMessage> CoreValidateAsync(object context, [EnumeratorCancellation] CancellationToken cancellationToken = new CancellationToken())
+		{
+			if (string.IsNullOrWhiteSpace(this._))
+				yield return new Message(String.Empty, string.Format("Specification requires property '{0}' to be set to any non-whitespace value.", nameof(this.__)), Severity.Error);
+
+			await Task.CompletedTask;
 		}
 
 		#endregion

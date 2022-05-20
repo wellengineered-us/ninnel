@@ -34,7 +34,7 @@ namespace WellEngineered.Ninnel.Hosting.Tool.Defaults
 				throw new ArgumentNullException(nameof(ninnelContextType));
 
 			// TODO - Fix this
-			return await new DefaultComponentFactory().CreateNinnelComponentAsync<INinnelContext>(AssemblyDomain.Default.DependencyManager, ninnelContextType, (this.Configuration.Parent.ComponentAutoWire ?? true), cancellationToken);
+			return await new DefaultComponentFactory().CreateNinnelComponentAsync<INinnelContext>(AssemblyDomain.Default.DependencyManager, ninnelContextType, (this.Configuration.Parent.ComponentAutoWire ?? true), null, true, cancellationToken);
 		}
 
 		protected override async ValueTask<long> CoreExecuteAsync(INinnelContext ninnelContext, CancellationToken cancellationToken = default)

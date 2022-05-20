@@ -37,10 +37,10 @@ namespace WellEngineered.Ninnel.Station.Minimal
 			return default;
 		}
 
-		protected override ValueTask<IAsyncLifecycle> CoreProcessAsync(object ninnelStationFrame, IAsyncLifecycle asyncNinnelStream, AsyncNinnelMiddlewareDelegate next, CancellationToken cancellationToken = default)
+		/*protected override ValueTask<IAsyncLifecycle> CoreProcessAsync(object ninnelStationFrame, IAsyncLifecycle asyncNinnelStream, AsyncNinnelMiddlewareDelegate next, CancellationToken cancellationToken = default)
 		{
 			return default;
-		}
+		}*/
 
 		protected override ValueTask CorPostExecuteAsync(NinnelStationFrame ninnelStationFrame, CancellationToken cancellationToken = default)
 		{

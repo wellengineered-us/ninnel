@@ -16,7 +16,7 @@ namespace WellEngineered.Ninnel.Middleware
 	{
 		#region Methods/Operators
 
-		public static INinnelMiddlewareBuilder<TData, TComponent> From<TData, TComponent, TConfiguration>(this INinnelMiddlewareBuilder<TData, TComponent> ninnelMiddlewareBuilder, Type ninnelMiddlewareType, TConfiguration ninnelMiddlewareConfiguration, bool autoWire)
+		public static INinnelMiddlewareBuilder<TData, TComponent> From<TData, TComponent, TConfiguration>(this INinnelMiddlewareBuilder<TData, TComponent> ninnelMiddlewareBuilder, Type ninnelMiddlewareType, TConfiguration ninnelMiddlewareConfiguration, bool autoWire, string selectorKey = null, bool throwOnError = true)
 			where TComponent : ILifecycle
 			where TConfiguration : class, INinnelConfiguration
 		{
@@ -37,6 +37,8 @@ namespace WellEngineered.Ninnel.Middleware
 																Type _ninnelMiddlewareType = ninnelMiddlewareType; // prevent closure bug
 																TConfiguration _ninnelMiddlewareConfiguration = ninnelMiddlewareConfiguration; // prevent closure bug
 																bool _autoWire = autoWire; // prevent closure bug
+																string _selectorKey = selectorKey; // prevent closure bug
+																bool _throwOnError = throwOnError; // prevent closure bug
 																INinnelMiddleware<TData, TComponent, TConfiguration> ninnelMiddleware;
 
 																if (data == null)
@@ -52,7 +54,8 @@ namespace WellEngineered.Ninnel.Middleware
 																	throw new InvalidOperationException(nameof(_ninnelMiddlewareConfiguration));
 
 																// TODO - Fix this
-																ninnelMiddleware = new DefaultComponentFactory().CreateNinnelComponent<INinnelMiddleware<TData, TComponent, TConfiguration>>(AssemblyDomain.Default.DependencyManager, _ninnelMiddlewareType, autoWire);
+																ninnelMiddleware = new DefaultComponentFactory()
+																	.CreateNinnelComponent<INinnelMiddleware<TData, TComponent, TConfiguration>>(AssemblyDomain.Default.DependencyManager, _ninnelMiddlewareType, _autoWire, _selectorKey, _throwOnError);
 
 																if ((object)ninnelMiddleware == null)
 																	throw new InvalidOperationException(nameof(ninnelMiddleware));

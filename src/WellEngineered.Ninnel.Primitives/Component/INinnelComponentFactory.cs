@@ -15,7 +15,7 @@ namespace WellEngineered.Ninnel.Primitives.Component
 	{
 		#region Methods/Operators
 
-		TNinnelComponent CreateNinnelComponent<TNinnelComponent>(IDependencyManager dependencyManager, Type ninnelComponentType, bool autoWire)
+		TNinnelComponent CreateNinnelComponent<TNinnelComponent>(IDependencyManager dependencyManager, Type ninnelComponentType, bool autoWire, string selectorKey = null, bool throwOnError = true)
 			where TNinnelComponent : INinnelComponent0;
 
 		#endregion

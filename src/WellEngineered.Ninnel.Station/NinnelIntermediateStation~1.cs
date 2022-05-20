@@ -29,6 +29,27 @@ namespace WellEngineered.Ninnel.Station
 
 		#region Properties/Indexers/Events
 
+		INinnelStream INinnelMiddleware<NinnelStationFrame, INinnelStream, IUnknownNinnelConfiguration>.Process(NinnelStationFrame ninnelStationFrame, INinnelStream ninnelStream, NinnelMiddlewareDelegate<NinnelStationFrame, INinnelStream> next)
+		{
+			//if ((object)ninnelStationFrame == null)
+			//throw new ArgumentNullException(nameof(ninnelStationFrame));
+
+			//if ((object)ninnelStream == null)
+			//throw new ArgumentNullException(nameof(ninnelStream));
+
+			//if ((object)next == null)
+			//throw new ArgumentNullException(nameof(next));
+
+			try
+			{
+				return this.CoreProcess(ninnelStationFrame, ninnelStream, next);
+			}
+			catch (Exception ex)
+			{
+				throw new NinnelException(string.Format("The intermediate station failed (see inner exception)."), ex);
+			}
+		}
+
 		IUnknownNinnelConfiguration<TNinnelSpecification> IConfigurable<IUnknownNinnelConfiguration<TNinnelSpecification>>.Configuration
 		{
 			get
@@ -47,12 +68,10 @@ namespace WellEngineered.Ninnel.Station
 
 		protected abstract INinnelStream CoreProcess(NinnelStationFrame ninnelStationFrame, INinnelStream ninnelStream, NinnelMiddlewareDelegate<NinnelStationFrame, INinnelStream> next);
 
-		//protected abstract ILifecycle CoreProcess(object ninnelStationFrame, ILifecycle ninnelStream, NinnelMiddlewareDelegate next);
-
 		INinnelStream INinnelMiddleware<NinnelStationFrame, INinnelStream, IUnknownNinnelConfiguration<TNinnelSpecification>>.Process(NinnelStationFrame ninnelStationFrame, INinnelStream ninnelStream, NinnelMiddlewareDelegate<NinnelStationFrame, INinnelStream> next)
 		{
-			if ((object)ninnelStationFrame == null)
-				throw new ArgumentNullException(nameof(ninnelStationFrame));
+			//if ((object)ninnelStationFrame == null)
+			//throw new ArgumentNullException(nameof(ninnelStationFrame));
 
 			//if ((object)ninnelStream == null)
 			//throw new ArgumentNullException(nameof(ninnelStream));
@@ -72,25 +91,16 @@ namespace WellEngineered.Ninnel.Station
 
 		#endregion
 
-		/*ILifecycle INinnelMiddleware.Process(object ninnelStationFrame, ILifecycle ninnelStream, NinnelMiddlewareDelegate next)
+		IUnknownNinnelConfiguration IConfigurable<IUnknownNinnelConfiguration>.Configuration
 		{
-			if ((object)ninnelStationFrame == null)
-				throw new ArgumentNullException(nameof(ninnelStationFrame));
-
-			//if ((object)ninnelStream == null)
-			//throw new ArgumentNullException(nameof(ninnelStream));
-
-			//if ((object)next == null)
-			//throw new ArgumentNullException(nameof(next));
-
-			try
+			get
 			{
-				return this.CoreProcess(ninnelStationFrame, ninnelStream, next);
+				return base.Configuration;
 			}
-			catch (Exception ex)
+			set
 			{
-				throw new NinnelException(string.Format("The intermediate station failed (see inner exception)."), ex);
+				base.Configuration = new UnknownNinnelConfiguration<TNinnelSpecification>(value);
 			}
-		}*/
+		}
 	}
 }

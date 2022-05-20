@@ -40,6 +40,7 @@ namespace WellEngineered.Ninnel.Configuration
 		private UnknownNinnelConfiguration outletStationConfiguration;
 		private string pipelineAssemblyQualifiedTypeName;
 		private RecordConfiguration recordConfiguration;
+		private bool? demoMode;
 
 		#endregion
 
@@ -126,6 +127,18 @@ namespace WellEngineered.Ninnel.Configuration
 			{
 				this.EnsureParentOnPropertySet(this.recordConfiguration, value);
 				this.recordConfiguration = value;
+			}
+		}
+
+		public bool? DemoMode
+		{
+			get
+			{
+				return this.demoMode;
+			}
+			set
+			{
+				this.demoMode = value;
 			}
 		}
 

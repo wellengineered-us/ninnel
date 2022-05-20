@@ -18,7 +18,6 @@ namespace WellEngineered.Ninnel.Station
 {
 	public abstract partial class NinnelIntermediateStation<TNinnelSpecification>
 		: NinnelStation<TNinnelSpecification>,
-			IAsyncNinnelMiddleware<NinnelStationFrame, IAsyncNinnelStream, IUnknownNinnelConfiguration<TNinnelSpecification>>,
 			INinnelIntermediateStation<TNinnelSpecification>
 		where TNinnelSpecification : class, INinnelSpecification, new()
 	{
@@ -26,30 +25,7 @@ namespace WellEngineered.Ninnel.Station
 
 		protected abstract ValueTask<IAsyncNinnelStream> CoreProcessAsync(NinnelStationFrame ninnelStationFrame, IAsyncNinnelStream asyncNinnelStream, AsyncNinnelMiddlewareDelegate<NinnelStationFrame, IAsyncNinnelStream> next, CancellationToken cancellationToken = default);
 
-		protected abstract ValueTask<IAsyncLifecycle> CoreProcessAsync(object ninnelStationFrame, IAsyncLifecycle asyncNinnelStream, AsyncNinnelMiddlewareDelegate next, CancellationToken cancellationToken = default);
-
 		public ValueTask<IAsyncNinnelStream> ProcessAsync(NinnelStationFrame ninnelStationFrame, IAsyncNinnelStream asyncNinnelStream, AsyncNinnelMiddlewareDelegate<NinnelStationFrame, IAsyncNinnelStream> next, CancellationToken cancellationToken = default)
-		{
-			if ((object)ninnelStationFrame == null)
-				throw new ArgumentNullException(nameof(ninnelStationFrame));
-
-			//if ((object)asyncNinnelStream == null)
-			//throw new ArgumentNullException(nameof(asyncNinnelStream));
-
-			//if ((object)next == null)
-			//throw new ArgumentNullException(nameof(next));
-
-			try
-			{
-				return this.CoreProcessAsync(ninnelStationFrame, asyncNinnelStream, next, cancellationToken);
-			}
-			catch (Exception ex)
-			{
-				throw new NinnelException(string.Format("The intermediate station failed (see inner exception)."), ex);
-			}
-		}
-
-		public ValueTask<IAsyncLifecycle> ProcessAsync(object ninnelStationFrame, IAsyncLifecycle asyncNinnelStream, AsyncNinnelMiddlewareDelegate next, CancellationToken cancellationToken = default)
 		{
 			if ((object)ninnelStationFrame == null)
 				throw new ArgumentNullException(nameof(ninnelStationFrame));

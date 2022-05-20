@@ -12,8 +12,9 @@ using WellEngineered.Ninnel.Primitives.Configuration;
 namespace WellEngineered.Ninnel.Station
 {
 	public partial interface INinnelIntermediateStation<TNinnelSpecification>
-		: INinnelStation, //INinnelIntermediateStation,
+		: INinnelStation,
 			INinnelMiddleware<NinnelStationFrame, INinnelStream, IUnknownNinnelConfiguration<TNinnelSpecification>>,
+			INinnelMiddleware<NinnelStationFrame, INinnelStream, IUnknownNinnelConfiguration>,
 			INinnelStation<TNinnelSpecification>
 		where TNinnelSpecification : class, INinnelSpecification, new()
 	{

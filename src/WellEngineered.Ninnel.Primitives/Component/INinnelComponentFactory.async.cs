@@ -18,7 +18,7 @@ namespace WellEngineered.Ninnel.Primitives.Component
 	{
 		#region Methods/Operators
 
-		ValueTask<TNinnelComponent> CreateNinnelComponentAsync<TNinnelComponent>(IDependencyManager dependencyManager, Type ninnelComponentType, bool autoWire, CancellationToken cancellationToken = default)
+		ValueTask<TNinnelComponent> CreateNinnelComponentAsync<TNinnelComponent>(IDependencyManager dependencyManager, Type ninnelComponentType, bool autoWire, string selectorKey = null, bool throwOnError = true, CancellationToken cancellationToken = default)
 			where TNinnelComponent : INinnelComponent0;
 
 		#endregion

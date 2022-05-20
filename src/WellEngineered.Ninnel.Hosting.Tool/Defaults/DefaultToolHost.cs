@@ -5,6 +5,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 
 using WellEngineered.Ninnel.Configuration;
@@ -198,47 +199,51 @@ namespace WellEngineered.Ninnel.Hosting.Tool.Defaults
 					this.CoreMaybeDispatchIdle();
 				}
 
+				int pipelineCount = this.Configuration.PipelineConfigurations.Count(pc => pc.IsEnabled ?? false);
+				Guid? __ = Guid.Empty;
+				
 				this.CoreMaybeDispatchBefore();
 
-				int pipelineCount = this.Configuration.PipelineConfigurations.Count;
-				Guid? __ = Guid.Empty;
-				using (IDisposableDispatch<SemaphoreSlim> semaphoreSlim = AssemblyDomain.Default.ResourceManager.Using(__, new SemaphoreSlim(0, pipelineCount)))
+				if (pipelineCount > 0)
 				{
-					foreach (PipelineConfiguration pipelineConfiguration in this.Configuration.PipelineConfigurations)
+					using (IDisposableDispatch<SemaphoreSlim> semaphoreSlim = AssemblyDomain.Default.ResourceManager.Using(__, new SemaphoreSlim(0, pipelineCount)))
 					{
-						Type ninnelPipelineType;
+						foreach (PipelineConfiguration pipelineConfiguration in this.Configuration.PipelineConfigurations)
+						{
+							Type ninnelPipelineType;
 
-						if ((object)pipelineConfiguration == null)
-							continue;
+							if ((object)pipelineConfiguration == null)
+								continue;
 
-						if (!(pipelineConfiguration.IsEnabled ?? false))
-							continue;
+							if (!(pipelineConfiguration.IsEnabled ?? false))
+								continue;
 
-						ninnelPipelineType = pipelineConfiguration.GetPipelineType();
+							ninnelPipelineType = pipelineConfiguration.GetPipelineType();
 
-						if ((object)ninnelPipelineType == null)
-							throw new NinnelException(nameof(ninnelPipelineType));
+							if ((object)ninnelPipelineType == null)
+								throw new NinnelException(nameof(ninnelPipelineType));
 
-						Console.Out.WriteLine("dispatch_loop: execute...");
+							Console.Out.WriteLine("dispatch_loop: execute...");
 
-						this.CoreExecutePipelineOnce(semaphoreSlim.Target, ninnelPipelineType, pipelineConfiguration);
-					}
+							this.CoreExecutePipelineOnce(semaphoreSlim.Target, ninnelPipelineType, pipelineConfiguration);
+						}
 
-					//semaphoreSlim.Wait(this.CancellationTokenSource.Token);
+						//semaphoreSlim.Wait(this.CancellationTokenSource.Token);
 
-					//using (CancellationTokenSource ctsDie = new CancellationTokenSource())
-					{
-						//TimeSpan gracefulShutdownTimeSpan;
+						//using (CancellationTokenSource ctsDie = new CancellationTokenSource())
+						{
+							//TimeSpan gracefulShutdownTimeSpan;
 
-						//gracefulShutdownTimeSpan = this.Configuration.GracefulShutdownTimeSpan ??
-						//new TimeSpan(0, 0, 0, 5, 0);
+							//gracefulShutdownTimeSpan = this.Configuration.GracefulShutdownTimeSpan ??
+							//new TimeSpan(0, 0, 0, 5, 0);
 
-						//ctsDie.CancelAfter(gracefulShutdownTimeSpan);
-						//semaphoreSlim.Wait(ctsDie.Token);
-						semaphoreSlim.Target.Wait();
+							//ctsDie.CancelAfter(gracefulShutdownTimeSpan);
+							//semaphoreSlim.Wait(ctsDie.Token);
+							semaphoreSlim.Target.Wait();
+						}
 					}
 				}
-
+				
 				this.CoreMaybeDispatchAfter();
 
 				this.CoreMaybeDispatchAwait();

@@ -6,12 +6,16 @@
 #if ASYNC_ALL_THE_WAY_DOWN
 using System;
 
+using WellEngineered.Ninnel.Material;
+using WellEngineered.Ninnel.Middleware;
 using WellEngineered.Ninnel.Primitives.Configuration;
 
 namespace WellEngineered.Ninnel.Station
 {
 	public partial interface INinnelIntermediateStation<TNinnelSpecification>
-		: INinnelStation, //INinnelIntermediateStation,
+		: INinnelStation,
+			IAsyncNinnelMiddleware<NinnelStationFrame, IAsyncNinnelStream, IUnknownNinnelConfiguration<TNinnelSpecification>>,
+			IAsyncNinnelMiddleware<NinnelStationFrame, IAsyncNinnelStream, IUnknownNinnelConfiguration>,
 			INinnelStation<TNinnelSpecification>
 		where TNinnelSpecification : class, INinnelSpecification, new()
 	{
