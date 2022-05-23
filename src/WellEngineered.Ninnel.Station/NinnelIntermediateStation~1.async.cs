@@ -22,6 +22,16 @@ namespace WellEngineered.Ninnel.Station
 		where TNinnelSpecification : class, INinnelSpecification, new()
 	{
 		#region Methods/Operators
+		
+		protected sealed override ValueTask CorePreExecuteAsync(NinnelStationFrame ninnelStationFrame, CancellationToken cancellationToken = default)
+		{
+			throw new NinnelException(string.Format("Pre execution semantics are not supported for this component type."));
+		}
+
+		protected sealed override ValueTask CorPostExecuteAsync(NinnelStationFrame ninnelStationFrame, CancellationToken cancellationToken = default)
+		{
+			throw new NinnelException(string.Format("Post execution semantics are not supported for this component type."));
+		}
 
 		protected abstract ValueTask<IAsyncNinnelStream> CoreProcessAsync(NinnelStationFrame ninnelStationFrame, IAsyncNinnelStream asyncNinnelStream, AsyncNinnelMiddlewareDelegate<NinnelStationFrame, IAsyncNinnelStream> next, CancellationToken cancellationToken = default);
 

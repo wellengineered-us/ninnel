@@ -6,6 +6,7 @@
 using System;
 using System.Collections.Generic;
 
+using WellEngineered.Ninnel.Configuration;
 using WellEngineered.Ninnel.Primitives;
 using WellEngineered.Ninnel.Primitives.Component;
 using WellEngineered.Solder.Injection;
@@ -34,37 +35,14 @@ namespace WellEngineered.Ninnel.Hosting.Tool
 
 		protected override INinnelToolHost CoreCreateHost(ToolHostConfiguration toolHostConfiguration)
 		{
-			IEnumerable<IMessage> messages;
-
-			if ((object)toolHostConfiguration == null)
-				throw new ArgumentNullException(nameof(toolHostConfiguration));
-
-			messages = toolHostConfiguration.Validate("Host");
-
-			if ((object)messages != null)
-			{
-				int count = 0;
-				foreach (IMessage message in messages)
-				{
-					if (message == null)
-						continue;
-
-					Console.Out.WriteLine(string.Format("{0}[{1}] => {2}", message.Severity, (count + 1), message.Description));
-
-					count++;
-				}
-
-				if (count > 0)
-					throw new NinnelException(string.Format("Tool host configuration validation failed with error count: {0}", count));
-			}
-
-			// +++
-
+			
 			IDependencyManager dependencyManager;
 
 			Type ninnelToolHostType;
 			INinnelToolHost ninnelToolHost;
 			bool autoWire;
+			
+			toolHostConfiguration.ValidateFail("Host");
 
 			dependencyManager = AssemblyDomain.Default.DependencyManager;
 			ninnelToolHostType = toolHostConfiguration.GetHostType();
@@ -97,7 +75,7 @@ namespace WellEngineered.Ninnel.Hosting.Tool
 
 			if ((object)toolHostConfiguration == null)
 				throw new NinnelException(string.Format("Failed to deserialize tool host configuration from URI: '{0}'.", toolHostConfigUri));
-
+			
 			return this.CoreCreateHost(toolHostConfiguration);
 		}
 

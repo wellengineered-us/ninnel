@@ -5,6 +5,7 @@
 
 using System;
 
+using WellEngineered.Ninnel.Configuration;
 using WellEngineered.Ninnel.Primitives.Component;
 using WellEngineered.Ninnel.Primitives.Configuration;
 using WellEngineered.Solder.Injection;
@@ -63,11 +64,13 @@ namespace WellEngineered.Ninnel.Middleware
 																using (ninnelMiddleware)
 																{
 																	ninnelMiddleware.Configuration = _ninnelMiddlewareConfiguration;
-																	//ninnelMiddleware.Configuration.Validate();
+																	ninnelMiddleware.Configuration.ValidateFail("Middleware");
 																	ninnelMiddleware.Create();
 
+																	//ninnelMiddleware.PreEx()
 																	newTarget = ninnelMiddleware.Process(data, target, next);
-
+																	//ninnelMiddleware.PreEx()
+																		
 																	return newTarget;
 																}
 															};
@@ -99,10 +102,16 @@ namespace WellEngineered.Ninnel.Middleware
 
 																if (_ninnelMiddleware == null)
 																	throw new InvalidOperationException(nameof(_ninnelMiddleware));
-
+																
 																using (_ninnelMiddleware)
 																{
-																	if (!_ninnelMiddleware.IsCreated || _ninnelMiddleware.IsDisposed)
+																	if (!_ninnelMiddleware.IsCreated)
+																	{
+																		_ninnelMiddleware.Configuration.ValidateFail("Middleware");
+																		_ninnelMiddleware.Create();
+																	}
+
+																	if (_ninnelMiddleware.IsDisposed)
 																		newTarget = default;
 																	else
 																		newTarget = _ninnelMiddleware.Process(data, target, next);

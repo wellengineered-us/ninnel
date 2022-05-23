@@ -25,14 +25,6 @@ namespace WellEngineered.Ninnel.Station.Minimal
 
 		#region Methods/Operators
 
-		protected override void CorePostExecute(NinnelStationFrame ninnelStationFrame)
-		{
-		}
-
-		protected override void CorePreExecute(NinnelStationFrame ninnelStationFrame)
-		{
-		}
-
 		protected override INinnelStream CoreProcess(NinnelStationFrame ninnelStationFrame, INinnelStream ninnelStream, NinnelMiddlewareDelegate<NinnelStationFrame, INinnelStream> next)
 		{
 			Console.WriteLine("null BEFORE");

@@ -123,36 +123,36 @@ namespace WellEngineered.Ninnel.Hosting.Tool.Defaults
 					if (this.Configuration.DemoMode ?? false)
 					{
 						// object instance
-						INinnelIntermediateStation<_Specification> intermediateStation = new _IntermediateStation2();
-						((IConfigurable<IUnknownNinnelConfiguration<_Specification>>)intermediateStation).Configuration = new UnknownNinnelConfiguration<_Specification>(new UnknownNinnelConfiguration());
+						INinnelIntermediateStation<_DemoSpecification> intermediateStation = new _DemoIntermediateStation(null);
+						((IConfigurable<IUnknownNinnelConfiguration<_DemoSpecification>>)intermediateStation).Configuration = new UnknownNinnelConfiguration<_DemoSpecification>(new UnknownNinnelConfiguration());
 						intermediateStation.Create();
-						processorBuilder.With<NinnelStationFrame, INinnelStream, IUnknownNinnelConfiguration<_Specification>>(intermediateStation);
+						processorBuilder.With<NinnelStationFrame, INinnelStream, IUnknownNinnelConfiguration<_DemoSpecification>>(intermediateStation);
 
 						// regular method
-						processorBuilder.Use(this.TestMiddlewareMethod);
+						processorBuilder.Use(this._DemoMiddlewareMethod);
 
 						// local method
-						NinnelMiddlewareDelegate<NinnelStationFrame, INinnelStream> _middleware(NinnelMiddlewareDelegate<NinnelStationFrame, INinnelStream> _next)
+						NinnelMiddlewareDelegate<NinnelStationFrame, INinnelStream> _demoMiddleware(NinnelMiddlewareDelegate<NinnelStationFrame, INinnelStream> _next)
 						{
-							INinnelStream _processor(NinnelStationFrame _data, INinnelStream _target)
+							INinnelStream _demoPprocessor(NinnelStationFrame _data, INinnelStream _target)
 							{
 								try
 								{
-									Console.WriteLine("local method BEFORE");
+									Console.WriteLine("DEMO: local method BEFORE");
 									var retval = (object)_next != null ? _next(_data, _target) : _target;
-									Console.WriteLine("local method AFTER");
+									Console.WriteLine("DEMO: local method AFTER");
 									return retval;
 								}
 								catch (Exception ex)
 								{
-									throw new NinnelException(string.Format("The local method middleware failed (see inner exception)."), ex);
+									throw new NinnelException(string.Format("The demo local method middleware failed (see inner exception)."), ex);
 								}
 							}
 
-							return _processor;
+							return _demoPprocessor;
 						}
 
-						processorBuilder.Use(_middleware);
+						processorBuilder.Use(_demoMiddleware);
 
 						// lambda expression
 						processorBuilder.Use(next =>
@@ -161,14 +161,14 @@ namespace WellEngineered.Ninnel.Hosting.Tool.Defaults
 														{
 															try
 															{
-																Console.WriteLine("lambda expression BEFORE");
+																Console.WriteLine("DEMO: lambda expression BEFORE");
 																var retval = (object)next != null ? next(_data, _target) : _target;
-																Console.WriteLine("lambda expression AFTER");
+																Console.WriteLine("DEMO: lambda expression AFTER");
 																return retval;
 															}
 															catch (Exception ex)
 															{
-																throw new NinnelException(string.Format("The lambda expression middleware failed (see inner exception)."), ex);
+																throw new NinnelException(string.Format("The demo lambda expression middleware failed (see inner exception)."), ex);
 															}
 														};
 											});
@@ -201,9 +201,6 @@ namespace WellEngineered.Ninnel.Hosting.Tool.Defaults
 						if ((object)process != null)
 							ninnelStream = process(ninnelStationFrame, ninnelStream);
 
-						//if((object)process0 != null)
-						//ninnelStream = (INinnelStream)process0(ninnelStationFrame, ninnelStream);
-
 						ninnelOutletStation.Deliver(ninnelStationFrame, ninnelStream);
 					}
 
@@ -225,14 +222,14 @@ namespace WellEngineered.Ninnel.Hosting.Tool.Defaults
 			// return 0;*/
 		}
 
-		private NinnelMiddlewareDelegate<NinnelStationFrame, INinnelStream> TestMiddlewareMethod(NinnelMiddlewareDelegate<NinnelStationFrame, INinnelStream> next)
+		private NinnelMiddlewareDelegate<NinnelStationFrame, INinnelStream> _DemoMiddlewareMethod(NinnelMiddlewareDelegate<NinnelStationFrame, INinnelStream> next)
 		{
 			NinnelMiddlewareDelegate<NinnelStationFrame, INinnelStream> retval;
-			retval = NinnelMiddlewareClosure<NinnelStationFrame, INinnelStream>.GetNinnelMiddlewareChain(this.TestMiddlewareMethod, next);
+			retval = NinnelMiddlewareClosure<NinnelStationFrame, INinnelStream>.GetNinnelMiddlewareChain(this._DemoMiddlewareMethod, next);
 			return retval;
 		}
 
-		private INinnelStream TestMiddlewareMethod(NinnelStationFrame data, INinnelStream target, NinnelMiddlewareDelegate<NinnelStationFrame, INinnelStream> next)
+		private INinnelStream _DemoMiddlewareMethod(NinnelStationFrame data, INinnelStream target, NinnelMiddlewareDelegate<NinnelStationFrame, INinnelStream> next)
 		{
 			try
 			{
@@ -244,14 +241,14 @@ namespace WellEngineered.Ninnel.Hosting.Tool.Defaults
 				if ((object)data.RecordConfiguration == null)
 					throw new NinnelException(nameof(data.RecordConfiguration));
 
-				Console.WriteLine("regular method BEFORE");
+				Console.WriteLine("DEMO: regular method BEFORE");
 
 				if ((object)next != null)
 					newNinnelStream = next(data, target);
 				else
 					newNinnelStream = target;
 
-				Console.WriteLine("regular method AFTER");
+				Console.WriteLine("DEMO: regular method AFTER");
 
 				return newNinnelStream;
 			}
@@ -264,8 +261,20 @@ namespace WellEngineered.Ninnel.Hosting.Tool.Defaults
 		#endregion
 	}
 
-	public class _IntermediateStation2 : NinnelIntermediateStation<_Specification>
+	public class _DemoIntermediateStation : NinnelIntermediateStation<_DemoSpecification>
 	{
+		public _DemoIntermediateStation()
+		{
+			this._ = "default";
+		}
+		
+		public _DemoIntermediateStation(object nonDefault)
+		{
+			this._ = "non-default";
+		}
+
+		private readonly string _;
+		
 		#region Methods/Operators
 
 		protected override ValueTask<IAsyncNinnelStream> CoreProcessAsync(NinnelStationFrame ninnelStationFrame, IAsyncNinnelStream asyncNinnelStream, AsyncNinnelMiddlewareDelegate<NinnelStationFrame, IAsyncNinnelStream> next, CancellationToken cancellationToken = default)
@@ -283,107 +292,32 @@ namespace WellEngineered.Ninnel.Hosting.Tool.Defaults
 			if ((object)data.RecordConfiguration == null)
 				throw new NinnelException(nameof(data.RecordConfiguration));
 
-			Console.WriteLine("INTERMEDIATE STATION object instance BEFORE");
+			Console.WriteLine(string.Format("DEMO: {0} intermediate station BEFORE", this._));
 
 			if ((object)next != null)
 				newNinnelStream = next(data, target);
 			else
 				newNinnelStream = target;
 
-			Console.WriteLine("INTERMEDIATE STATION object instance AFTER");
+			Console.WriteLine(string.Format("DEMO: {0} intermediate station AFTER", this._));
 
 			return newNinnelStream;
 		}
 
 		#endregion
 
-		protected override IUnknownSolderConfiguration<_Specification> CoreCreateGenericTypedUnknownConfiguration(IUnknownSolderConfiguration untypedUnknownSolderConfiguration)
+		protected override IUnknownSolderConfiguration<_DemoSpecification> CoreCreateGenericTypedUnknownConfiguration(IUnknownSolderConfiguration untypedUnknownSolderConfiguration)
 		{
-			return new UnknownNinnelConfiguration<_Specification>(untypedUnknownSolderConfiguration);
-		}
-
-		protected override ValueTask CorePreExecuteAsync(NinnelStationFrame ninnelStationFrame, CancellationToken cancellationToken = default)
-		{
-			return default;
-		}
-
-		protected override ValueTask CorPostExecuteAsync(NinnelStationFrame ninnelStationFrame, CancellationToken cancellationToken = default)
-		{
-			return default;
-		}
-
-		protected override void CorePostExecute(NinnelStationFrame ninnelStationFrame)
-		{
-		}
-
-		protected override void CorePreExecute(NinnelStationFrame ninnelStationFrame)
-		{
+			return new UnknownNinnelConfiguration<_DemoSpecification>(untypedUnknownSolderConfiguration);
 		}
 	}
 	
-	public class _IntermediateStation : NinnelIntermediateStation<_Specification>
-	{
-		#region Methods/Operators
-
-		protected override ValueTask<IAsyncNinnelStream> CoreProcessAsync(NinnelStationFrame ninnelStationFrame, IAsyncNinnelStream asyncNinnelStream, AsyncNinnelMiddlewareDelegate<NinnelStationFrame, IAsyncNinnelStream> next, CancellationToken cancellationToken = default)
-		{
-			return default;
-		}
-
-		protected override INinnelStream CoreProcess(NinnelStationFrame data, INinnelStream target, NinnelMiddlewareDelegate<NinnelStationFrame, INinnelStream> next)
-		{
-			INinnelStream newNinnelStream;
-
-			if ((object)data.NinnelContext == null)
-				throw new NinnelException(nameof(data.NinnelContext));
-
-			if ((object)data.RecordConfiguration == null)
-				throw new NinnelException(nameof(data.RecordConfiguration));
-
-			Console.WriteLine("INTERMEDIATE STATION BEFORE");
-
-			if ((object)next != null)
-				newNinnelStream = next(data, target);
-			else
-				newNinnelStream = target;
-
-			Console.WriteLine("INTERMEDIATE STATION AFTER");
-
-			return newNinnelStream;
-		}
-
-		#endregion
-
-		protected override IUnknownSolderConfiguration<_Specification> CoreCreateGenericTypedUnknownConfiguration(IUnknownSolderConfiguration untypedUnknownSolderConfiguration)
-		{
-			return new UnknownNinnelConfiguration<_Specification>(untypedUnknownSolderConfiguration);
-		}
-
-		protected override ValueTask CorePreExecuteAsync(NinnelStationFrame ninnelStationFrame, CancellationToken cancellationToken = default)
-		{
-			return default;
-		}
-
-		protected override ValueTask CorPostExecuteAsync(NinnelStationFrame ninnelStationFrame, CancellationToken cancellationToken = default)
-		{
-			return default;
-		}
-
-		protected override void CorePostExecute(NinnelStationFrame ninnelStationFrame)
-		{
-		}
-
-		protected override void CorePreExecute(NinnelStationFrame ninnelStationFrame)
-		{
-		}
-	}
-	
-	public sealed partial class _Specification
+	public sealed partial class _DemoSpecification
 		: NinnelSpecification
 	{
 		#region Constructors/Destructors
 
-		public _Specification()
+		public _DemoSpecification()
 		{
 		}
 

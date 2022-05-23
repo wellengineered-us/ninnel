@@ -5,7 +5,9 @@
 
 #if ASYNC_ALL_THE_WAY_DOWN
 using System;
+using System.Threading;
 
+using WellEngineered.Ninnel.Configuration;
 using WellEngineered.Ninnel.Primitives.Component;
 using WellEngineered.Ninnel.Primitives.Configuration;
 using WellEngineered.Solder.Injection;
@@ -53,7 +55,8 @@ namespace WellEngineered.Ninnel.Middleware
 																		throw new InvalidOperationException(nameof(_ninnelMiddlewareConfiguration));
 
 																	// TODO - Fix this
-																	ninnelMiddleware = new DefaultComponentFactory().CreateNinnelComponent<IAsyncNinnelMiddleware<TData, TComponent, TConfiguration>>(AssemblyDomain.Default.DependencyManager, _ninnelMiddlewareType, autoWire);
+																	ninnelMiddleware = new DefaultComponentFactory()
+																		.CreateNinnelComponent<IAsyncNinnelMiddleware<TData, TComponent, TConfiguration>>(AssemblyDomain.Default.DependencyManager, _ninnelMiddlewareType, autoWire);
 
 																	if ((object)ninnelMiddleware == null)
 																		throw new InvalidOperationException(nameof(ninnelMiddleware));
@@ -61,7 +64,7 @@ namespace WellEngineered.Ninnel.Middleware
 																	await using (ninnelMiddleware)
 																	{
 																		ninnelMiddleware.Configuration = _ninnelMiddlewareConfiguration;
-																		//await ninnelMiddleware.Configuration.ValidateAsync();
+																		await ninnelMiddleware.Configuration.ValidateFailAsync("Middleware");
 																		await ninnelMiddleware.CreateAsync();
 
 																		newTarget = await ninnelMiddleware.ProcessAsync(data, target, next);
@@ -72,7 +75,7 @@ namespace WellEngineered.Ninnel.Middleware
 													});
 		}
 
-		public static IAsyncNinnelMiddlewareBuilder<TData, TComponent> WithAsync<TData, TComponent, TConfiguration>(this IAsyncNinnelMiddlewareBuilder<TData, TComponent> ninnelMiddlewareBuilder, IAsyncNinnelMiddleware<TData, TComponent, TConfiguration> ninnelMiddleware)
+		public static IAsyncNinnelMiddlewareBuilder<TData, TComponent> WithAsync<TData, TComponent, TConfiguration>(this IAsyncNinnelMiddlewareBuilder<TData, TComponent> ninnelMiddlewareBuilder, IAsyncNinnelMiddleware<TData, TComponent, TConfiguration> ninnelMiddleware, CancellationToken cancellationToken = default)
 			where TComponent : IAsyncLifecycle
 			where TConfiguration : class, INinnelConfiguration
 		{
@@ -88,6 +91,7 @@ namespace WellEngineered.Ninnel.Middleware
 																{
 																	TComponent newTarget;
 																	IAsyncNinnelMiddleware<TData, TComponent, TConfiguration> _ninnelMiddleware = ninnelMiddleware; // prevent closure bug
+																	CancellationToken _cancellationToken = cancellationToken; // prevent closure bug
 
 																	if (data == null)
 																		throw new ArgumentNullException(nameof(data));
@@ -100,10 +104,16 @@ namespace WellEngineered.Ninnel.Middleware
 
 																	await using (ninnelMiddleware)
 																	{
-																		if (!_ninnelMiddleware.IsAsyncCreated || _ninnelMiddleware.IsAsyncDisposed)
+																		if (!_ninnelMiddleware.IsAsyncCreated)
+																		{
+																			await _ninnelMiddleware.Configuration.ValidateFailAsync("Middleware", _cancellationToken);
+																			await _ninnelMiddleware.CreateAsync(_cancellationToken);
+																		}
+																		
+																		if (_ninnelMiddleware.IsAsyncDisposed)
 																			newTarget = default;
 																		else
-																			newTarget = await _ninnelMiddleware.ProcessAsync(data, target, next);
+																			newTarget = await _ninnelMiddleware.ProcessAsync(data, target, next, _cancellationToken);
 
 																		return newTarget;
 																	}

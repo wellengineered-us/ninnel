@@ -28,6 +28,16 @@ namespace WellEngineered.Ninnel.Station
 		#endregion
 
 		#region Properties/Indexers/Events
+		
+		protected sealed override void CorePostExecute(NinnelStationFrame ninnelStationFrame)
+		{
+			throw new NinnelException(string.Format("Post execution semantics are not supported for this component type."));
+		}
+
+		protected sealed override void CorePreExecute(NinnelStationFrame ninnelStationFrame)
+		{
+			throw new NinnelException(string.Format("Pre execution semantics are not supported for this component type."));
+		}
 
 		INinnelStream INinnelMiddleware<NinnelStationFrame, INinnelStream, IUnknownNinnelConfiguration>.Process(NinnelStationFrame ninnelStationFrame, INinnelStream ninnelStream, NinnelMiddlewareDelegate<NinnelStationFrame, INinnelStream> next)
 		{

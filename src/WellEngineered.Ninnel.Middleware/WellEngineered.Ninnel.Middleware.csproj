@@ -19,6 +19,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<ProjectReference Include="..\WellEngineered.Ninnel.Configuration\WellEngineered.Ninnel.Configuration.csproj" />
 		<ProjectReference Include="..\WellEngineered.Ninnel.Primitives\WellEngineered.Ninnel.Primitives.csproj" />
 	</ItemGroup>
 

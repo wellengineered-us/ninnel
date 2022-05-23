@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
+using WellEngineered.Ninnel.Configuration;
 using WellEngineered.Ninnel.Primitives;
 using WellEngineered.Ninnel.Primitives.Component;
 using WellEngineered.Solder.Injection;
@@ -29,37 +30,13 @@ namespace WellEngineered.Ninnel.Hosting.Tool
 
 		protected override async ValueTask<INinnelToolHost> CoreCreateHostAsync(ToolHostConfiguration toolHostConfiguration, CancellationToken cancellationToken = default)
 		{
-			IAsyncEnumerable<IMessage> messages;
-
-			if ((object)toolHostConfiguration == null)
-				throw new ArgumentNullException(nameof(toolHostConfiguration));
-
-			messages = toolHostConfiguration.ValidateAsync("Host", cancellationToken);
-
-			if ((object)messages != null)
-			{
-				int count = 0;
-				await foreach (IMessage message in messages.WithCancellation(cancellationToken))
-				{
-					if (message == null)
-						continue;
-
-					await Console.Out.WriteLineAsync(string.Format("{0}[{1}] => {2}", message.Severity, (count + 1), message.Description));
-
-					count++;
-				}
-
-				if (count > 0)
-					throw new NinnelException(string.Format("Tool host configuration validation failed with error count: {0}", count));
-			}
-
-			// +++
-
 			IDependencyManager dependencyManager;
 
 			Type ninnelToolHostType;
 			INinnelToolHost ninnelToolHost;
 			bool autoWire;
+			
+			await toolHostConfiguration.ValidateFailAsync("Host", cancellationToken);
 
 			dependencyManager = AssemblyDomain.Default.DependencyManager;
 			ninnelToolHostType = toolHostConfiguration.GetHostType();

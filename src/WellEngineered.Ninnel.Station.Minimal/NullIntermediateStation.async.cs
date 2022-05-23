@@ -27,22 +27,7 @@ namespace WellEngineered.Ninnel.Station.Minimal
 			return new UnknownNinnelConfiguration<EmptySpecification>(untypedUnknownSolderConfiguration);
 		}
 
-		protected override ValueTask CorePreExecuteAsync(NinnelStationFrame ninnelStationFrame, CancellationToken cancellationToken = default)
-		{
-			return default;
-		}
-
 		protected override ValueTask<IAsyncNinnelStream> CoreProcessAsync(NinnelStationFrame ninnelStationFrame, IAsyncNinnelStream asyncNinnelStream, AsyncNinnelMiddlewareDelegate<NinnelStationFrame, IAsyncNinnelStream> next, CancellationToken cancellationToken = default)
-		{
-			return default;
-		}
-
-		/*protected override ValueTask<IAsyncLifecycle> CoreProcessAsync(object ninnelStationFrame, IAsyncLifecycle asyncNinnelStream, AsyncNinnelMiddlewareDelegate next, CancellationToken cancellationToken = default)
-		{
-			return default;
-		}*/
-
-		protected override ValueTask CorPostExecuteAsync(NinnelStationFrame ninnelStationFrame, CancellationToken cancellationToken = default)
 		{
 			return default;
 		}

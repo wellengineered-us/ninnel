@@ -1,7 +1,6 @@
 {
 	"TargetEngineVersion": "0.9.0",
-	"ConfigurationVersion": "1.0.0",
-	"DemoMode": false,
+	"ConfigurationVersion": "1.0.0",	
 	"ComponentAutoWire": false,
 	"__HostFactoryAssemblyQualifiedTypeName": null,
 	"HostAssemblyQualifiedTypeName": "WellEngineered.Ninnel.Hosting.Tool.Defaults.DefaultToolHost, WellEngineered.Ninnel.Hosting.Tool",
@@ -11,7 +10,8 @@
 	"DispatchIdleTimeSpan": "00:00:03",
 	"PipelineConfigurations": [
 		{
-			"IsEnabled": false,
+			"IsEnabled": true,
+			"DemoMode": true,
 			"PipelineAssemblyQualifiedTypeName": "WellEngineered.Ninnel.Hosting.Tool.Defaults.DefaultToolPipeline, WellEngineered.Ninnel.Hosting.Tool",
 			"InletStationConfiguration": {
 				"AssemblyQualifiedTypeName": "WellEngineered.Ninnel.Station.Minimal.NullInletStation, WellEngineered.Ninnel.Station.Minimal",
@@ -21,7 +21,7 @@
 			},
 			"IntermediateStationConfigurations": [
 				{
-					"AssemblyQualifiedTypeName": "WellEngineered.Ninnel.Hosting.Tool.Defaults._IntermediateStation, WellEngineered.Ninnel.Hosting.Tool",
+					"AssemblyQualifiedTypeName": "WellEngineered.Ninnel.Hosting.Tool.Defaults._DemoIntermediateStation, WellEngineered.Ninnel.Hosting.Tool",
 					"Specification": {
 						"_": "^"
 					}
@@ -35,7 +35,8 @@
 			}
 		},
 		{
-			"IsEnabled": true,
+			"IsEnabled": false,
+			"DemoMode": false,
 			"PipelineAssemblyQualifiedTypeName": "WellEngineered.Ninnel.Hosting.Tool.Defaults.DefaultToolPipeline, WellEngineered.Ninnel.Hosting.Tool",
 			"InletStationConfiguration": {
 				"AssemblyQualifiedTypeName": "WellEngineered.Ninnel.Station.Minimal.NullInletStation, WellEngineered.Ninnel.Station.Minimal",
