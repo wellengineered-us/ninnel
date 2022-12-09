@@ -3,15 +3,12 @@
 	Distributed under the MIT license: http://www.opensource.org/licenses/mit-license.php
 */
 
-/*using WellEngineered.Ninnel.Middleware;*/
+using System;
 
-#if ASYNC_ALL_THE_WAY_DOWN
 namespace WellEngineered.Ninnel.Station
 {
-	public partial interface INinnelIntermediateStation
-		: INinnelStation/*,
-			IAsyncNinnelMiddleware*/
+	public partial interface INinnelTerminalStation
+		: INinnelStation
 	{
 	}
 }
-#endif

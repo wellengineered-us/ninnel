@@ -10,7 +10,8 @@ using WellEngineered.Ninnel.Primitives.Configuration;
 namespace WellEngineered.Ninnel.Station
 {
 	public partial interface INinnelTerminalStation<TNinnelSpecification>
-		: INinnelStation<TNinnelSpecification>
+		: INinnelTerminalStation,
+			INinnelStation<TNinnelSpecification>
 		where TNinnelSpecification : class, INinnelSpecification, new()
 	{
 	}

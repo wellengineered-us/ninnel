@@ -12,7 +12,6 @@ using WellEngineered.Ninnel.Material;
 using WellEngineered.Ninnel.Middleware;
 using WellEngineered.Ninnel.Primitives;
 using WellEngineered.Ninnel.Primitives.Configuration;
-using WellEngineered.Solder.Primitives;
 
 namespace WellEngineered.Ninnel.Station
 {

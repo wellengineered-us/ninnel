@@ -4,6 +4,8 @@
 */
 
 using System;
+using System.Threading;
+using System.Threading.Tasks;
 
 using WellEngineered.Ninnel.Material;
 using WellEngineered.Ninnel.Middleware;
@@ -39,7 +41,7 @@ namespace WellEngineered.Ninnel.Station
 			throw new NinnelException(string.Format("Pre execution semantics are not supported for this component type."));
 		}
 
-		INinnelStream INinnelMiddleware<NinnelStationFrame, INinnelStream, IUnknownNinnelConfiguration>.Process(NinnelStationFrame ninnelStationFrame, INinnelStream ninnelStream, NinnelMiddlewareDelegate<NinnelStationFrame, INinnelStream> next)
+		/*INinnelStream INinnelMiddleware<NinnelStationFrame, INinnelStream, IUnknownNinnelConfiguration>.Process(NinnelStationFrame ninnelStationFrame, INinnelStream ninnelStream, NinnelMiddlewareDelegate<NinnelStationFrame, INinnelStream> next)
 		{
 			//if ((object)ninnelStationFrame == null)
 			//throw new ArgumentNullException(nameof(ninnelStationFrame));
@@ -58,7 +60,7 @@ namespace WellEngineered.Ninnel.Station
 			{
 				throw new NinnelException(string.Format("The intermediate station failed (see inner exception)."), ex);
 			}
-		}
+		}*/
 
 		IUnknownNinnelConfiguration<TNinnelSpecification> IConfigurable<IUnknownNinnelConfiguration<TNinnelSpecification>>.Configuration
 		{
@@ -71,6 +73,24 @@ namespace WellEngineered.Ninnel.Station
 				base.Configuration = new UnknownNinnelConfiguration<TNinnelSpecification>(value);
 			}
 		}
+
+		/*public ILifecycle Process(object data, ILifecycle target, NinnelMiddlewareDelegate next)
+		{
+			return this.CoreProcess((NinnelStationFrame)data, (INinnelStream)target, (frame, stream) => (INinnelStream)next(frame, stream));
+		}*/
+
+		/*public async ValueTask<IAsyncLifecycle> ProcessAsync(object data, IAsyncLifecycle target, AsyncNinnelMiddlewareDelegate next, CancellationToken cancellationToken = default)
+		{
+			var q = this.CoreProcessAsync((NinnelStationFrame)data, (IAsyncNinnelStream)target, async (frame, stream) =>
+																								{
+																									var x = next(frame, stream);
+																									var y = (IAsyncNinnelStream)await x;
+																									return y;
+																								}, cancellationToken);
+
+			var i = await q;
+			return i;
+		}*/
 
 		#endregion
 
@@ -101,7 +121,7 @@ namespace WellEngineered.Ninnel.Station
 
 		#endregion
 
-		IUnknownNinnelConfiguration IConfigurable<IUnknownNinnelConfiguration>.Configuration
+		/*IUnknownNinnelConfiguration IConfigurable<IUnknownNinnelConfiguration>.Configuration
 		{
 			get
 			{
@@ -111,6 +131,6 @@ namespace WellEngineered.Ninnel.Station
 			{
 				base.Configuration = new UnknownNinnelConfiguration<TNinnelSpecification>(value);
 			}
-		}
+		}*/
 	}
 }

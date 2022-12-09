@@ -124,7 +124,10 @@ namespace WellEngineered.Ninnel.Hosting.Tool.Defaults
 					{
 						// object instance
 						INinnelIntermediateStation<_DemoSpecification> intermediateStation = new _DemoIntermediateStation(null);
-						((IConfigurable<IUnknownNinnelConfiguration<_DemoSpecification>>)intermediateStation).Configuration = new UnknownNinnelConfiguration<_DemoSpecification>(new UnknownNinnelConfiguration());
+
+						//intermediateStation.Configuration = null;
+
+							((IConfigurable<IUnknownNinnelConfiguration<_DemoSpecification>>)intermediateStation).Configuration = new UnknownNinnelConfiguration<_DemoSpecification>(new UnknownNinnelConfiguration());
 						intermediateStation.Create();
 						processorBuilder.With<NinnelStationFrame, INinnelStream, IUnknownNinnelConfiguration<_DemoSpecification>>(intermediateStation);
 
@@ -134,7 +137,7 @@ namespace WellEngineered.Ninnel.Hosting.Tool.Defaults
 						// local method
 						NinnelMiddlewareDelegate<NinnelStationFrame, INinnelStream> _demoMiddleware(NinnelMiddlewareDelegate<NinnelStationFrame, INinnelStream> _next)
 						{
-							INinnelStream _demoPprocessor(NinnelStationFrame _data, INinnelStream _target)
+							INinnelStream _demoProcessor(NinnelStationFrame _data, INinnelStream _target)
 							{
 								try
 								{
@@ -149,7 +152,7 @@ namespace WellEngineered.Ninnel.Hosting.Tool.Defaults
 								}
 							}
 
-							return _demoPprocessor;
+							return _demoProcessor;
 						}
 
 						processorBuilder.Use(_demoMiddleware);

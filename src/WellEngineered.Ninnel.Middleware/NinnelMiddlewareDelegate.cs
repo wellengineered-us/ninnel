@@ -3,9 +3,9 @@
 	Distributed under the MIT license: http://www.opensource.org/licenses/mit-license.php
 */
 
-using WellEngineered.Solder.Primitives;
+/*using WellEngineered.Solder.Primitives;
 
 namespace WellEngineered.Ninnel.Middleware
 {
 	public delegate ILifecycle NinnelMiddlewareDelegate(object data, ILifecycle target);
-}
+}*/
