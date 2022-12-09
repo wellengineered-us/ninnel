@@ -41,7 +41,7 @@ namespace WellEngineered.Ninnel.Station
 			throw new NinnelException(string.Format("Pre execution semantics are not supported for this component type."));
 		}
 
-		/*INinnelStream INinnelMiddleware<NinnelStationFrame, INinnelStream, IUnknownNinnelConfiguration>.Process(NinnelStationFrame ninnelStationFrame, INinnelStream ninnelStream, NinnelMiddlewareDelegate<NinnelStationFrame, INinnelStream> next)
+		INinnelStream INinnelMiddleware<NinnelStationFrame, INinnelStream, IUnknownNinnelConfiguration>.Process(NinnelStationFrame ninnelStationFrame, INinnelStream ninnelStream, NinnelMiddlewareDelegate<NinnelStationFrame, INinnelStream> next)
 		{
 			//if ((object)ninnelStationFrame == null)
 			//throw new ArgumentNullException(nameof(ninnelStationFrame));
@@ -60,7 +60,7 @@ namespace WellEngineered.Ninnel.Station
 			{
 				throw new NinnelException(string.Format("The intermediate station failed (see inner exception)."), ex);
 			}
-		}*/
+		}
 
 		IUnknownNinnelConfiguration<TNinnelSpecification> IConfigurable<IUnknownNinnelConfiguration<TNinnelSpecification>>.Configuration
 		{
@@ -121,7 +121,7 @@ namespace WellEngineered.Ninnel.Station
 
 		#endregion
 
-		/*IUnknownNinnelConfiguration IConfigurable<IUnknownNinnelConfiguration>.Configuration
+		IUnknownNinnelConfiguration IConfigurable<IUnknownNinnelConfiguration>.Configuration
 		{
 			get
 			{
@@ -131,6 +131,6 @@ namespace WellEngineered.Ninnel.Station
 			{
 				base.Configuration = new UnknownNinnelConfiguration<TNinnelSpecification>(value);
 			}
-		}*/
+		}
 	}
 }

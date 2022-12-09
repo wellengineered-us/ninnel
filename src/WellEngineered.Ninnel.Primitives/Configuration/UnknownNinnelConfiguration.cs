@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 
 using WellEngineered.Solder.Component;
+using WellEngineered.Solder.Configuration;
 
 namespace WellEngineered.Ninnel.Primitives.Configuration
 {

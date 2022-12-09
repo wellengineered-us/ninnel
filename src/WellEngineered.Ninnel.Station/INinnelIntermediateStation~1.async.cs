@@ -9,14 +9,17 @@ using System;
 using WellEngineered.Ninnel.Material;
 using WellEngineered.Ninnel.Middleware;
 using WellEngineered.Ninnel.Primitives.Configuration;
+using WellEngineered.Solder.Configuration;
 
 namespace WellEngineered.Ninnel.Station
 {
 	public partial interface INinnelIntermediateStation<TNinnelSpecification>
 		: INinnelIntermediateStation,
 			IAsyncNinnelMiddleware<NinnelStationFrame, IAsyncNinnelStream, IUnknownNinnelConfiguration<TNinnelSpecification>>,
-			//IAsyncNinnelMiddleware<NinnelStationFrame, IAsyncNinnelStream, IUnknownNinnelConfiguration>,
-			INinnelStation<TNinnelSpecification>
+			
+			/* THIS IS ABSOLUTELY REQUIRED AND THERE IS NO KNOWN SOLUTION TO AVOID AMBIGUOUS WARNING */
+			IAsyncNinnelMiddleware<NinnelStationFrame, IAsyncNinnelStream, IUnknownNinnelConfiguration>,
+			IConfigurable<IUnknownNinnelConfiguration>, INinnelStation<TNinnelSpecification>
 		where TNinnelSpecification : class, INinnelSpecification, new()
 	{
 	}
