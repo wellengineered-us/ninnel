@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 
 using WellEngineered.Ninnel.Hosting.Tool;
 using WellEngineered.Ninnel.Primitives.Component;
+using WellEngineered.Solder.Executive;
 using WellEngineered.Solder.Injection;
 using WellEngineered.Solder.Injection.Resolutions;
 
