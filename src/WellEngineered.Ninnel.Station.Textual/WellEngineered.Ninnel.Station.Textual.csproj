@@ -17,6 +17,7 @@
 
 	<ItemGroup>
 		<PackageReference Include="WellEngineered.Solder.Component" Version="$(WeSolderPackageVersion)" />
+		<PackageReference Include="WellEngineered.Siobhan.Textual" Version="$(WeSiobhanPackageVersion)" />
 	</ItemGroup>
 
 </Project>
