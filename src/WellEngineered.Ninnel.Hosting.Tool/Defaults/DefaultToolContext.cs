@@ -84,9 +84,6 @@ namespace WellEngineered.Ninnel.Hosting.Tool.Defaults
 		{
 			if (itemIndex == -1 || isCompleted)
 				Console.WriteLine("{0}@{4}-{5:N}: itemIndex = {1}, isCompleted = {2}, rollingTiming = {3}", sourceLabel, itemIndex, isCompleted, rollingTiming, Environment.CurrentManagedThreadId, this.ComponentId);
-
-			if (isCompleted && itemIndex == 0)
-				throw new NinnelException();
 		}
 
 		#endregion

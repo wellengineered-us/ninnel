@@ -19,69 +19,84 @@ using WellEngineered.Siobhan.Primitives;
 
 namespace WellEngineered.Ninnel.Station.Minimal
 {
-	public partial class NullInletStation
+	public partial class ConsoleInletStation
 		: NinnelInletStation<EmptySpecification>
 	{
 		#region Methods/Operators
-
-		private async static ValueTask<ISiobhanSchema> GetRandomSchemaAsync()
+		
+		private async static ValueTask<ISiobhanSchema> GetConsoleSchemaAsync()
 		{
 			long fieldCount;
 			SiobhanSchemaBuilder schemaBuilder;
 			
-			await Task.CompletedTask;
+			string line;
+			string[] fieldNames;
 
 			schemaBuilder = SiobhanSchemaBuilder.Create();
-
-			schemaBuilder.AddField(string.Empty, typeof(Guid), false, true);
-
-			fieldCount = Random.Next(MIN_FIELD_COUNT, MAX_FIELD_COUNT);
-
-			if (fieldCount == INVALID_RANDOM_VALUE)
-				throw new NinnelException(nameof(INVALID_RANDOM_VALUE));
-
-			for (long fieldIndex = 0; fieldIndex < fieldCount; fieldIndex++)
+			
+			await TextWriter.WriteLineAsync("Enter list of schema field names separated by pipe character: ");
+			line = TextReader.ReadLine();
+			
+			if (!string.IsNullOrEmpty(line))
 			{
-				string fieldName = string.Format(FIELD_NAME, fieldIndex);
+				fieldNames = line.Split('|');
 
-				schemaBuilder.AddField(fieldName, typeof(double), false, false);
+				if ((object)fieldNames == null || fieldNames.Length <= 0)
+				{
+					await TextWriter.WriteLineAsync("List of schema field names was invalid; using default (blank).");
+					schemaBuilder.AddField(string.Empty, typeof(string), false, true);
+				}
+				else
+				{
+					for (long fieldIndex = 0; fieldIndex < fieldNames.Length; fieldIndex++)
+					{
+						string fieldName;
+
+						fieldName = fieldNames[fieldIndex];
+
+						if (string.IsNullOrWhiteSpace(fieldName))
+							continue;
+
+						schemaBuilder.AddField(fieldName, typeof(string), false, true);
+					}
+
+					await TextWriter.WriteLineAsync(string.Format("Building KEY schema: '{0}'", string.Join(" | ", fieldNames)));
+				}
 			}
 
 			return schemaBuilder.Build();
 		}
-		
-		private static async IAsyncEnumerable<ISiobhanPayload> GetRandomPayloadsAsync(ISiobhanSchema schema, [EnumeratorCancellation] CancellationToken cancellationToken = default)
+
+		private async IAsyncEnumerable<ISiobhanPayload> GetYieldViaConsoleAsync(ISiobhanSchema schema, [EnumeratorCancellation] CancellationToken cancellationToken = default)
 		{
 			ISiobhanPayload payload;
 			ISiobhanField[] fields;
 
-			long recordCount;
+			long recordIndex;
+			string line;
+			string[] fieldValues;
 
 			if ((object)schema == null)
 				throw new ArgumentNullException(nameof(schema));
 
-			await Task.CompletedTask;
-
 			fields = schema.Fields.Values.ToArray();
 
-			recordCount = Random.Next(MIN_RECORD_COUNT, MAX_RECORD_COUNT);
-
-			recordCount = MAX_RECORD_COUNT;
-
-			if (recordCount == INVALID_RANDOM_VALUE)
-				throw new NinnelException(nameof(INVALID_RANDOM_VALUE));
-
-			for (long recordIndex = 0; recordIndex < recordCount; recordIndex++)
+			recordIndex = 0;
+			while (fields.Length > 0)
 			{
+				line = await TextReader.ReadLineAsync();
+
+				if (string.IsNullOrEmpty(line))
+					yield break;
+
+				fieldValues = line.Split('|');
+
 				payload = new SiobhanPayload();
 
-				for (int fieldIndex = 0; fieldIndex < fields.Length; fieldIndex++)
-				{
-					if (fields[fieldIndex].IsFieldKeyComponent)
-						payload.Add(fields[fieldIndex].FieldName, Guid.NewGuid());
-					else
-						payload.Add(fields[fieldIndex].FieldName, Random.NextDouble());
-				}
+				for (long fieldIndex = 0; fieldIndex < Math.Min(fieldValues.Length, fields.Length); fieldIndex++)
+					payload.Add(fields[fieldIndex].FieldName, fieldValues[fieldIndex]);
+
+				recordIndex++;
 
 				yield return payload;
 			}
@@ -123,7 +138,7 @@ namespace WellEngineered.Ninnel.Station.Minimal
 			if ((object)schema == null)
 				throw new NinnelException(nameof(schema));
 
-			payloads = GetRandomPayloadsAsync(schema, cancellationToken);
+			payloads = this.GetYieldViaConsoleAsync(schema, cancellationToken);
 
 			if ((object)payloads == null)
 				throw new NinnelException(nameof(payloads));
@@ -155,7 +170,7 @@ namespace WellEngineered.Ninnel.Station.Minimal
 				ninnelStationFrame.NinnelContext.LocalState.Add(this, localState);
 			}
 
-			schema = await GetRandomSchemaAsync();
+			schema = await GetConsoleSchemaAsync();
 
 			if ((object)schema == null)
 				throw new NinnelException(nameof(schema));

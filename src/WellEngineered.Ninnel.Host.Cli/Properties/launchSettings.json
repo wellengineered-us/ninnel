@@ -23,7 +23,7 @@
 		},
 		"test_static_cin_to_cout": {
 			"commandName": "Project",
-			"commandLineArgs": "-sourcefile:_static_cin_to_cout.json",
+			"commandLineArgs": "-hostconfigfile:_static_cin_to_cout.json",
 			"environmentVariables": {
 				"SOLDER_HOOK_UNHANDLED_EXCEPTIONS": "false"
 			}
