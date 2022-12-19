@@ -58,9 +58,9 @@ namespace WellEngineered.Ninnel.Hosting.Tool.Defaults
 		protected override async ValueTask CoreCancelAsync(CancellationToken cancellationToken = default)
 		{
 			// this method gets called on another thread from Main()...
-			await Console.Out.WriteLineAsync("halt_and_catch_fire: enter");
+			await Console.Out.WriteLineAsync("halt_and_catch_fire(async): enter");
 			await this.CoreGracefulShutdownAsync(false);
-			await Console.Out.WriteLineAsync("halt_and_catch_fire: leave");
+			await Console.Out.WriteLineAsync("halt_and_catch_fire(async): leave");
 		}
 
 		protected override async ValueTask CoreCreateAsync(bool creating, CancellationToken cancellationToken = default)
@@ -139,7 +139,7 @@ namespace WellEngineered.Ninnel.Hosting.Tool.Defaults
 			if (!this.CancellationTokenSource.Token.CanBeCanceled)
 				throw new NinnelException("!this.CancellationTokenSource.Token.CanBeCanceled");
 
-			await AssemblyDomain.Default.ResourceManager.PrintAsync(Guid.Empty, string.Format("graceful_shutdown: disposing = {2}, {0} ms, timespan = '{1}'", gracefulShutdownTimeSpan.TotalMilliseconds, gracefulShutdownTimeSpan, disposing));
+			await AssemblyDomain.Default.ResourceManager.PrintAsync(Guid.Empty, string.Format("graceful_shutdown(async): disposing = {2}, {0} ms, timespan = '{1}'", gracefulShutdownTimeSpan.TotalMilliseconds, gracefulShutdownTimeSpan, disposing));
 
 			this.CancellationTokenSource.Cancel();
 		}
@@ -182,7 +182,7 @@ namespace WellEngineered.Ninnel.Hosting.Tool.Defaults
 							if ((object)ninnelPipelineType == null)
 								throw new NinnelException(nameof(ninnelPipelineType));
 
-							await Console.Out.WriteLineAsync("dispatch_loop: execute...");
+							await Console.Out.WriteLineAsync("dispatch_loop(async): execute...");
 
 							await this.CoreExecutePipelineOnceAsync(ninnelPipelineType, pipelineConfiguration, cancellationToken);
 						}
@@ -217,17 +217,17 @@ namespace WellEngineered.Ninnel.Hosting.Tool.Defaults
 
 		protected virtual async ValueTask CoreMaybeDispatchAfterAsync(CancellationToken cancellationToken = default)
 		{
-			await Console.Out.WriteLineAsync("dispatch_loop: end");
+			await Console.Out.WriteLineAsync("dispatch_loop(async): end");
 		}
 
 		protected virtual async ValueTask CoreMaybeDispatchAwaitAsync(CancellationToken cancellationToken = default)
 		{
-			await Console.Out.WriteLineAsync("dispatch_loop: await");
+			await Console.Out.WriteLineAsync("dispatch_loop(async): await");
 		}
 
 		protected virtual async ValueTask CoreMaybeDispatchBeforeAsync(CancellationToken cancellationToken = default)
 		{
-			await Console.Out.WriteLineAsync("dispatch_loop: begin");
+			await Console.Out.WriteLineAsync("dispatch_loop(async): begin");
 		}
 
 		protected virtual async ValueTask CoreMaybeDispatchIdleAsync(CancellationToken cancellationToken = default)
@@ -236,9 +236,9 @@ namespace WellEngineered.Ninnel.Hosting.Tool.Defaults
 
 			dispatchIdleTimeSpan = this.Configuration.DispatchIdleTimeSpan ?? new TimeSpan(0, 0, 0, 10, 0);
 
-			await Console.Out.WriteLineAsync(string.Format("dispatch_loop: idle begin: timespan(ms) = {0}, timespan ='{1}'", dispatchIdleTimeSpan.TotalMilliseconds, dispatchIdleTimeSpan));
+			await Console.Out.WriteLineAsync(string.Format("dispatch_loop(async): idle begin: timespan(ms) = {0}, timespan ='{1}'", dispatchIdleTimeSpan.TotalMilliseconds, dispatchIdleTimeSpan));
 			await Task.Delay(dispatchIdleTimeSpan, cancellationToken);
-			await Console.Out.WriteLineAsync("dispatch_loop: idle end");
+			await Console.Out.WriteLineAsync("dispatch_loop(async): idle end");
 		}
 
 		protected async ValueTask<bool> ShouldRunDispatchLoopAsync(CancellationToken cancellationToken = default)
@@ -247,7 +247,7 @@ namespace WellEngineered.Ninnel.Hosting.Tool.Defaults
 			enabled = (this.Configuration.EnableDispatchLoop ?? false);
 			cancellation = this.CancellationTokenSource.IsCancellationRequested;
 
-			await Console.Out.WriteLineAsync(string.Format("should_run_dispatch_loop: enabled = {0}, cancellation = {1}", enabled, cancellation));
+			await Console.Out.WriteLineAsync(string.Format("should_run_dispatch_loop(async): enabled = {0}, cancellation = {1}", enabled, cancellation));
 
 			return enabled && !cancellation;
 		}

@@ -6,9 +6,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Threading;
-using System.Threading.Tasks;
 
 using WellEngineered.Ninnel.Configuration;
 using WellEngineered.Ninnel.Context;
@@ -21,7 +18,6 @@ using WellEngineered.Ninnel.Station;
 using WellEngineered.Ninnel.Transport;
 using WellEngineered.Solder.Configuration;
 using WellEngineered.Solder.Injection;
-using WellEngineered.Solder.Primitives;
 
 namespace WellEngineered.Ninnel.Hosting.Tool.Defaults
 {
@@ -124,10 +120,9 @@ namespace WellEngineered.Ninnel.Hosting.Tool.Defaults
 					{
 						// object instance
 						INinnelIntermediateStation<_DemoSpecification> intermediateStation = new _DemoIntermediateStation(null);
-
-						//intermediateStation.Configuration = null;
-
-							((IConfigurable<IUnknownNinnelConfiguration<_DemoSpecification>>)intermediateStation).Configuration = new UnknownNinnelConfiguration<_DemoSpecification>(new UnknownNinnelConfiguration());
+						((IConfigurable<IUnknownNinnelConfiguration<_DemoSpecification>>)intermediateStation)
+							.Configuration = new UnknownNinnelConfiguration<_DemoSpecification>(new UnknownNinnelConfiguration());
+						
 						intermediateStation.Create();
 						processorBuilder.With<NinnelStationFrame, INinnelStream, IUnknownNinnelConfiguration<_DemoSpecification>>(intermediateStation);
 
@@ -213,16 +208,6 @@ namespace WellEngineered.Ninnel.Hosting.Tool.Defaults
 			}
 
 			return 0;
-
-			// AssemblyDomain.Default.ResourceManager.Print(Guid.Empty, "Mark");
-			// Thread.Sleep(4000);
-			// AssemblyDomain.Default.ResourceManager.Print(Guid.Empty, "Set");
-			// Thread.Sleep(2000);
-			// AssemblyDomain.Default.ResourceManager.Print(Guid.Empty, "Ready");
-			// Thread.Sleep(1000);
-			// AssemblyDomain.Default.ResourceManager.Print(Guid.Empty, "Go");
-			//
-			// return 0;*/
 		}
 
 		private NinnelMiddlewareDelegate<NinnelStationFrame, INinnelStream> _DemoMiddlewareMethod(NinnelMiddlewareDelegate<NinnelStationFrame, INinnelStream> next)
@@ -259,109 +244,6 @@ namespace WellEngineered.Ninnel.Hosting.Tool.Defaults
 			{
 				throw new NinnelException(string.Format("The regular method middleware failed (see inner exception)."), ex);
 			}
-		}
-
-		#endregion
-	}
-
-	public class _DemoIntermediateStation : NinnelIntermediateStation<_DemoSpecification>
-	{
-		public _DemoIntermediateStation()
-		{
-			this._ = "default";
-		}
-		
-		public _DemoIntermediateStation(object nonDefault)
-		{
-			this._ = "non-default";
-		}
-
-		private readonly string _;
-		
-		#region Methods/Operators
-
-		protected override ValueTask<IAsyncNinnelStream> CoreProcessAsync(NinnelStationFrame ninnelStationFrame, IAsyncNinnelStream asyncNinnelStream, AsyncNinnelMiddlewareDelegate<NinnelStationFrame, IAsyncNinnelStream> next, CancellationToken cancellationToken = default)
-		{
-			return default;
-		}
-
-		protected override INinnelStream CoreProcess(NinnelStationFrame data, INinnelStream target, NinnelMiddlewareDelegate<NinnelStationFrame, INinnelStream> next)
-		{
-			INinnelStream newNinnelStream;
-
-			if ((object)data.NinnelContext == null)
-				throw new NinnelException(nameof(data.NinnelContext));
-
-			if ((object)data.RecordConfiguration == null)
-				throw new NinnelException(nameof(data.RecordConfiguration));
-
-			Console.WriteLine(string.Format("DEMO: {0} intermediate station BEFORE", this._));
-
-			if ((object)next != null)
-				newNinnelStream = next(data, target);
-			else
-				newNinnelStream = target;
-
-			Console.WriteLine(string.Format("DEMO: {0} intermediate station AFTER", this._));
-
-			return newNinnelStream;
-		}
-
-		#endregion
-
-		protected override IUnknownSolderConfiguration<_DemoSpecification> CoreCreateGenericTypedUnknownConfiguration(IUnknownSolderConfiguration untypedUnknownSolderConfiguration)
-		{
-			return new UnknownNinnelConfiguration<_DemoSpecification>(untypedUnknownSolderConfiguration);
-		}
-	}
-	
-	public sealed partial class _DemoSpecification
-		: NinnelSpecification
-	{
-		#region Constructors/Destructors
-
-		public _DemoSpecification()
-		{
-		}
-
-		#endregion
-
-		#region Fields/Constants
-
-		private string __;
-
-		#endregion
-
-		#region Properties/Indexers/Events
-
-		public string _
-		{
-			get
-			{
-				return this.__;
-			}
-			set
-			{
-				this.__ = value;
-			}
-		}
-
-		#endregion
-
-		#region Methods/Operators
-
-		protected override IEnumerable<IMessage> CoreValidate(object context)
-		{
-			if (string.IsNullOrWhiteSpace(this._))
-				yield return new Message(String.Empty, string.Format("Specification requires property '{0}' to be set to any non-whitespace value.", nameof(this.__)), Severity.Error);
-		}
-		
-		protected override async IAsyncEnumerable<IMessage> CoreValidateAsync(object context, [EnumeratorCancellation] CancellationToken cancellationToken = new CancellationToken())
-		{
-			if (string.IsNullOrWhiteSpace(this._))
-				yield return new Message(String.Empty, string.Format("Specification requires property '{0}' to be set to any non-whitespace value.", nameof(this.__)), Severity.Error);
-
-			await Task.CompletedTask;
 		}
 
 		#endregion

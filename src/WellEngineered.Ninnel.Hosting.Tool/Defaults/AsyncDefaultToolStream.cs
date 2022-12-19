@@ -1,0 +1,31 @@
+/*
+	Copyright ©2020-2022 WellEngineered.us, all rights reserved.
+	Distributed under the MIT license: http://www.opensource.org/licenses/mit-license.php
+*/
+
+#if ASYNC_ALL_THE_WAY_DOWN
+using System;
+
+using WellEngineered.Ninnel.Material;
+using WellEngineered.Siobhan.Primitives;
+
+namespace WellEngineered.Ninnel.Hosting.Tool.Defaults
+{
+	public sealed partial class AsyncDefaultToolStream
+		: AsyncNinnelStream
+	{
+		#region Constructors/Destructors
+
+		public AsyncDefaultToolStream(IAsyncLifecycleEnumerable<INinnelProduct> asyncNinnelRecords)
+			: base(asyncNinnelRecords)
+		{
+		}
+
+		#endregion
+
+		#region Methods/Operators
+
+		#endregion
+	}
+}
+#endif

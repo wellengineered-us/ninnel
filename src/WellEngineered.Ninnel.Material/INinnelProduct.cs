@@ -45,6 +45,11 @@ namespace WellEngineered.Ninnel.Material
 			get;
 		}
 
+		long ClockRelativeIndex
+		{
+			set;
+		}
+
 		#endregion
 	}
 }

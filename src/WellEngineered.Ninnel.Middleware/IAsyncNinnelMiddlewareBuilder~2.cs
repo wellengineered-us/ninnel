@@ -4,6 +4,8 @@
 */
 
 #if ASYNC_ALL_THE_WAY_DOWN
+using System.Threading;
+
 using WellEngineered.Solder.Primitives;
 
 namespace WellEngineered.Ninnel.Middleware
@@ -13,9 +15,9 @@ namespace WellEngineered.Ninnel.Middleware
 	{
 		#region Methods/Operators
 
-		AsyncNinnelMiddlewareDelegate<TData, TComponent> BuildAsync();
+		AsyncNinnelMiddlewareDelegate<TData, TComponent> BuildAsync(CancellationToken cancellationToken = default);
 
-		IAsyncNinnelMiddlewareBuilder<TData, TComponent> UseAsync(AsyncNinnelMiddlewareChainDelegate<AsyncNinnelMiddlewareDelegate<TData, TComponent>, AsyncNinnelMiddlewareDelegate<TData, TComponent>> ninnelMiddleware);
+		IAsyncNinnelMiddlewareBuilder<TData, TComponent> UseAsync(AsyncNinnelMiddlewareChainDelegate<AsyncNinnelMiddlewareDelegate<TData, TComponent>, AsyncNinnelMiddlewareDelegate<TData, TComponent>> ninnelMiddleware, CancellationToken cancellationToken = default);
 
 		#endregion
 	}

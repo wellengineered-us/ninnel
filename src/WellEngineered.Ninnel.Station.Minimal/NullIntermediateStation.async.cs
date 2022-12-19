@@ -11,9 +11,6 @@ using System.Threading.Tasks;
 using WellEngineered.Ninnel.Configuration;
 using WellEngineered.Ninnel.Material;
 using WellEngineered.Ninnel.Middleware;
-using WellEngineered.Ninnel.Primitives.Configuration;
-using WellEngineered.Solder.Configuration;
-using WellEngineered.Solder.Primitives;
 
 namespace WellEngineered.Ninnel.Station.Minimal
 {
@@ -22,14 +19,10 @@ namespace WellEngineered.Ninnel.Station.Minimal
 	{
 		#region Methods/Operators
 
-		protected override IUnknownSolderConfiguration<EmptySpecification> CoreCreateGenericTypedUnknownConfiguration(IUnknownSolderConfiguration untypedUnknownSolderConfiguration)
+		protected async override ValueTask<IAsyncNinnelStream> CoreProcessAsync(NinnelStationFrame ninnelStationFrame, IAsyncNinnelStream asyncNinnelStream, AsyncNinnelMiddlewareDelegate<NinnelStationFrame, IAsyncNinnelStream> next, CancellationToken cancellationToken = default)
 		{
-			return new UnknownNinnelConfiguration<EmptySpecification>(untypedUnknownSolderConfiguration);
-		}
-
-		protected override ValueTask<IAsyncNinnelStream> CoreProcessAsync(NinnelStationFrame ninnelStationFrame, IAsyncNinnelStream asyncNinnelStream, AsyncNinnelMiddlewareDelegate<NinnelStationFrame, IAsyncNinnelStream> next, CancellationToken cancellationToken = default)
-		{
-			return default;
+			var retval = (object)next != null ? await next(ninnelStationFrame, asyncNinnelStream, cancellationToken) : asyncNinnelStream;
+			return retval;
 		}
 
 		#endregion

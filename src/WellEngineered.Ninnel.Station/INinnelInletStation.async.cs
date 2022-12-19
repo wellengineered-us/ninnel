@@ -5,6 +5,7 @@
 
 #if ASYNC_ALL_THE_WAY_DOWN
 using System.Threading;
+using System.Threading.Tasks;
 
 using WellEngineered.Ninnel.Material;
 
@@ -15,7 +16,7 @@ namespace WellEngineered.Ninnel.Station
 	{
 		#region Methods/Operators
 
-		IAsyncNinnelStream InjectAsync(NinnelStationFrame ninnelStationFrame, CancellationToken cancellationToken = default);
+		ValueTask<IAsyncNinnelStream> InjectAsync(NinnelStationFrame ninnelStationFrame, CancellationToken cancellationToken = default);
 
 		#endregion
 	}

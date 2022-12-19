@@ -17,6 +17,7 @@
 	<ItemGroup>
 		<PackageReference Include="WellEngineered.Solder.Executive" Version="$(WeSolderPackageVersion)" />
 		<PackageReference Include="WellEngineered.Solder.Serialization.JsonNet" Version="$(WeSolderPackageVersion)" />
+		<PackageReference Include="WellEngineered.Siobhan.Middleware" Version="$(WeSiobhanPackageVersion)" />
 	</ItemGroup>
 
 </Project>

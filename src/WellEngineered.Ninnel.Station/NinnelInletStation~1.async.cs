@@ -6,6 +6,7 @@
 #if ASYNC_ALL_THE_WAY_DOWN
 using System;
 using System.Threading;
+using System.Threading.Tasks;
 
 using WellEngineered.Ninnel.Material;
 using WellEngineered.Ninnel.Primitives;
@@ -20,9 +21,9 @@ namespace WellEngineered.Ninnel.Station
 	{
 		#region Methods/Operators
 
-		protected abstract IAsyncNinnelStream CoreInjectAsync(NinnelStationFrame ninnelStationFrame, CancellationToken cancellationToken = default);
+		protected abstract ValueTask<IAsyncNinnelStream> CoreInjectAsync(NinnelStationFrame ninnelStationFrame, CancellationToken cancellationToken = default);
 
-		public IAsyncNinnelStream InjectAsync(NinnelStationFrame ninnelStationFrame, CancellationToken cancellationToken = default)
+		public ValueTask<IAsyncNinnelStream> InjectAsync(NinnelStationFrame ninnelStationFrame, CancellationToken cancellationToken = default)
 		{
 			if ((object)ninnelStationFrame == null)
 				throw new ArgumentNullException(nameof(ninnelStationFrame));

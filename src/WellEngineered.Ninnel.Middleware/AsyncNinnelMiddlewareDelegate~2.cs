@@ -4,13 +4,14 @@
 */
 
 #if ASYNC_ALL_THE_WAY_DOWN
+using System.Threading;
 using System.Threading.Tasks;
 
 using WellEngineered.Solder.Primitives;
 
 namespace WellEngineered.Ninnel.Middleware
 {
-	public delegate ValueTask<TComponent> AsyncNinnelMiddlewareDelegate<in TData, TComponent>(TData data, TComponent target)
+	public delegate ValueTask<TComponent> AsyncNinnelMiddlewareDelegate<in TData, TComponent>(TData data, TComponent target, CancellationToken cancellationToken)
 		where TComponent : IAsyncLifecycle;
 }
 #endif

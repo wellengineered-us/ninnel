@@ -108,6 +108,14 @@ namespace WellEngineered.Ninnel.Material
 			}
 		}
 
+		public long ClockRelativeIndex
+		{
+			set
+			{
+				this.Clock.RelativeIndex = value;
+			}
+		}
+
 		#endregion
 	}
 }

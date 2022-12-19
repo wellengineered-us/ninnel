@@ -8,7 +8,8 @@ using System;
 using WellEngineered.Ninnel.Configuration;
 using WellEngineered.Ninnel.Material;
 using WellEngineered.Ninnel.Middleware;
-using WellEngineered.Solder.Primitives;
+using WellEngineered.Ninnel.Primitives.Configuration;
+using WellEngineered.Solder.Configuration;
 
 namespace WellEngineered.Ninnel.Station.Minimal
 {
@@ -25,11 +26,14 @@ namespace WellEngineered.Ninnel.Station.Minimal
 
 		#region Methods/Operators
 
+		protected override IUnknownSolderConfiguration<EmptySpecification> CoreCreateGenericTypedUnknownConfiguration(IUnknownSolderConfiguration untypedUnknownSolderConfiguration)
+		{
+			return new UnknownNinnelConfiguration<EmptySpecification>(untypedUnknownSolderConfiguration);
+		}
+
 		protected override INinnelStream CoreProcess(NinnelStationFrame ninnelStationFrame, INinnelStream ninnelStream, NinnelMiddlewareDelegate<NinnelStationFrame, INinnelStream> next)
 		{
-			Console.WriteLine("null BEFORE");
 			var retval = (object)next != null ? next(ninnelStationFrame, ninnelStream) : ninnelStream;
-			Console.WriteLine("null AFTER");
 			return retval;
 		}
 

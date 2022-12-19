@@ -14,7 +14,7 @@
 			"DemoMode": true,
 			"PipelineAssemblyQualifiedTypeName": "WellEngineered.Ninnel.Hosting.Tool.Defaults.DefaultToolPipeline, WellEngineered.Ninnel.Hosting.Tool",
 			"InletStationConfiguration": {
-				"AssemblyQualifiedTypeName": "WellEngineered.Ninnel.Station.Minimal.NullInletStation, WellEngineered.Ninnel.Station.Minimal",
+				"AssemblyQualifiedTypeName": "WellEngineered.Ninnel.Hosting.Tool.Defaults._DemoInletStation, WellEngineered.Ninnel.Hosting.Tool",
 				"Specification": {
 					"_": "^"
 				}
@@ -28,7 +28,7 @@
 				}
 			],
 			"OutletStationConfiguration": {
-				"AssemblyQualifiedTypeName": "WellEngineered.Ninnel.Station.Minimal.NullOutletStation, WellEngineered.Ninnel.Station.Minimal",
+				"AssemblyQualifiedTypeName": "WellEngineered.Ninnel.Hosting.Tool.Defaults._DemoOutletStation, WellEngineered.Ninnel.Hosting.Tool",
 				"Specification": {
 					"_": "^"
 				}
@@ -39,21 +39,21 @@
 			"DemoMode": false,
 			"PipelineAssemblyQualifiedTypeName": "WellEngineered.Ninnel.Hosting.Tool.Defaults.DefaultToolPipeline, WellEngineered.Ninnel.Hosting.Tool",
 			"InletStationConfiguration": {
-				"AssemblyQualifiedTypeName": "WellEngineered.Ninnel.Station.Minimal.NullInletStation, WellEngineered.Ninnel.Station.Minimal",
+				"AssemblyQualifiedTypeName": "WellEngineered.Ninnel.Hosting.Tool.Defaults._DemoInletStation, WellEngineered.Ninnel.Hosting.Tool",
 				"Specification": {
 					"_": "^"
 				}
 			},
 			"IntermediateStationConfigurations": [
 				{
-					"AssemblyQualifiedTypeName": "WellEngineered.Ninnel.Station.Minimal.NullIntermediateStation, WellEngineered.Ninnel.Station.Minimal",
+					"AssemblyQualifiedTypeName": "WellEngineered.Ninnel.Hosting.Tool.Defaults._DemoIntermediateStation, WellEngineered.Ninnel.Hosting.Tool",
 					"Specification": {
 						"_": "^"
 					}
 				}
 			],
 			"OutletStationConfiguration": {
-				"AssemblyQualifiedTypeName": "WellEngineered.Ninnel.Station.Minimal.NullOutletStation, WellEngineered.Ninnel.Station.Minimal",
+				"AssemblyQualifiedTypeName": "WellEngineered.Ninnel.Hosting.Tool.Defaults._DemoOutletStation, WellEngineered.Ninnel.Hosting.Tool",
 				"Specification": {
 					"_": "^"
 				}

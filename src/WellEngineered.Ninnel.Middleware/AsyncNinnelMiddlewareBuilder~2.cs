@@ -7,6 +7,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 using WellEngineered.Solder.Primitives;
@@ -45,9 +46,9 @@ namespace WellEngineered.Ninnel.Middleware
 
 		#region Methods/Operators
 
-		public AsyncNinnelMiddlewareDelegate<TData, TComponent> BuildAsync()
+		public AsyncNinnelMiddlewareDelegate<TData, TComponent> BuildAsync(CancellationToken cancellationToken = default)
 		{
-			AsyncNinnelMiddlewareDelegate<TData, TComponent> asyncTransform = async (data, target) =>
+			AsyncNinnelMiddlewareDelegate<TData, TComponent> asyncTransform = async (data, target, ct) =>
 																			{
 																				await Task.CompletedTask;
 																				return target;
@@ -59,13 +60,13 @@ namespace WellEngineered.Ninnel.Middleware
 				if ((object)asyncComponents == null)
 					continue;
 
-				asyncTransform = asyncComponents.Invoke(asyncTransform);
+				asyncTransform = asyncComponents(asyncTransform);
 			}
 
 			return asyncTransform;
 		}
 
-		public IAsyncNinnelMiddlewareBuilder<TData, TComponent> UseAsync(AsyncNinnelMiddlewareChainDelegate<AsyncNinnelMiddlewareDelegate<TData, TComponent>, AsyncNinnelMiddlewareDelegate<TData, TComponent>> ninnelMiddleware)
+		public IAsyncNinnelMiddlewareBuilder<TData, TComponent> UseAsync(AsyncNinnelMiddlewareChainDelegate<AsyncNinnelMiddlewareDelegate<TData, TComponent>, AsyncNinnelMiddlewareDelegate<TData, TComponent>> ninnelMiddleware, CancellationToken cancellationToken = default)
 		{
 			if (ninnelMiddleware == null)
 				throw new ArgumentNullException(nameof(ninnelMiddleware));

@@ -29,7 +29,7 @@ namespace WellEngineered.Ninnel.Host.Cli
 		{
 			return await ExecutableApplication.ResolveRunAsync<NinnelConsoleApplication>(args);
 		}
-#endif
+
 		[AsyncDependencyMagicMethod]
 		public static async ValueTask OnDependencyMagicAsync(IDependencyManager dependencyManager, CancellationToken cancellationToken = default)
 		{
@@ -40,7 +40,7 @@ namespace WellEngineered.Ninnel.Host.Cli
 			await dependencyManager.AddResolutionAsync<INinnelComponentFactory>(string.Empty, false, new SingletonWrapperDependencyResolution<INinnelComponentFactory>(new InstanceDependencyResolution<INinnelComponentFactory>(new DefaultComponentFactory())), cancellationToken);
 			await dependencyManager.AddResolutionAsync<NinnelConsoleApplication>(string.Empty, false, new SingletonWrapperDependencyResolution<NinnelConsoleApplication>(new TransientActivatorAutoWiringDependencyResolution<NinnelConsoleApplication>()), cancellationToken);
 		}
-
+#endif
 		#endregion
 	}
 }

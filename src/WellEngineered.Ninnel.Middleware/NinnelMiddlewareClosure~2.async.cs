@@ -5,6 +5,7 @@
 
 #if ASYNC_ALL_THE_WAY_DOWN
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 using WellEngineered.Solder.Primitives;
@@ -16,7 +17,7 @@ namespace WellEngineered.Ninnel.Middleware
 	{
 		#region Constructors/Destructors
 
-		private AsyncNinnelMiddlewareClosure(AsyncNinnelMiddlewareToNextDelegate<TData, TComponent> asyncProcessToNext, AsyncNinnelMiddlewareDelegate<TData, TComponent> asyncNext)
+		private AsyncNinnelMiddlewareClosure(AsyncNinnelMiddlewareToNextDelegate<TData, TComponent> asyncProcessToNext, AsyncNinnelMiddlewareDelegate<TData, TComponent> asyncNext, CancellationToken cancellationToken = default)
 		{
 			if ((object)asyncProcessToNext == null)
 				throw new ArgumentNullException(nameof(asyncProcessToNext));
@@ -26,6 +27,7 @@ namespace WellEngineered.Ninnel.Middleware
 
 			this.asyncProcessToNext = asyncProcessToNext;
 			this.asyncNext = asyncNext;
+			this.cancellationToken = cancellationToken;
 		}
 
 		#endregion
@@ -34,6 +36,7 @@ namespace WellEngineered.Ninnel.Middleware
 
 		private readonly AsyncNinnelMiddlewareDelegate<TData, TComponent> asyncNext;
 		private readonly AsyncNinnelMiddlewareToNextDelegate<TData, TComponent> asyncProcessToNext;
+		private readonly CancellationToken cancellationToken;
 
 		#endregion
 
@@ -55,11 +58,19 @@ namespace WellEngineered.Ninnel.Middleware
 			}
 		}
 
+		private CancellationToken CancelationToken
+		{
+			get
+			{
+				return this.cancellationToken;
+			}
+		}
+
 		#endregion
 
 		#region Methods/Operators
 
-		public static AsyncNinnelMiddlewareDelegate<TData, TComponent> GetNinnelMiddlewareChain(AsyncNinnelMiddlewareToNextDelegate<TData, TComponent> asyncProcessToNext, AsyncNinnelMiddlewareDelegate<TData, TComponent> asyncNext)
+		public static AsyncNinnelMiddlewareDelegate<TData, TComponent> GetNinnelMiddlewareChain(AsyncNinnelMiddlewareToNextDelegate<TData, TComponent> asyncProcessToNext, AsyncNinnelMiddlewareDelegate<TData, TComponent> asyncNext, CancellationToken cancellationToken = default)
 		{
 			if ((object)asyncProcessToNext == null)
 				throw new ArgumentNullException(nameof(asyncProcessToNext));
@@ -67,15 +78,15 @@ namespace WellEngineered.Ninnel.Middleware
 			if ((object)asyncNext == null)
 				throw new ArgumentNullException(nameof(asyncNext));
 
-			return new AsyncNinnelMiddlewareClosure<TData, TComponent>(asyncProcessToNext, asyncNext).TransformAsync;
+			return new AsyncNinnelMiddlewareClosure<TData, TComponent>(asyncProcessToNext, asyncNext, cancellationToken).TransformAsync;
 		}
 
-		private async ValueTask<TComponent> TransformAsync(TData data, TComponent target)
+		private async ValueTask<TComponent> TransformAsync(TData data, TComponent target, CancellationToken cancellationToken = default)
 		{
 			TComponent component;
 
 			await Console.Out.WriteLineAsync("voo doo!");
-			component = await this.AsyncProcessToNext(data, target, this.AsyncNext);
+			component = await this.AsyncProcessToNext(data, target, this.AsyncNext, cancellationToken);
 			return component;
 		}
 

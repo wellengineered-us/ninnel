@@ -19,7 +19,7 @@ namespace WellEngineered.Ninnel.Middleware
 	{
 		#region Methods/Operators
 
-		public static IAsyncNinnelMiddlewareBuilder<TData, TComponent> FromAsync<TData, TComponent, TConfiguration>(this IAsyncNinnelMiddlewareBuilder<TData, TComponent> ninnelMiddlewareBuilder, Type ninnelMiddlewareType, TConfiguration ninnelMiddlewareConfiguration, bool autoWire)
+		public static IAsyncNinnelMiddlewareBuilder<TData, TComponent> FromAsync<TData, TComponent, TConfiguration>(this IAsyncNinnelMiddlewareBuilder<TData, TComponent> ninnelMiddlewareBuilder, Type ninnelMiddlewareType, TConfiguration ninnelMiddlewareConfiguration, bool autoWire, string selectorKey = null, bool throwOnError = true, CancellationToken cancellationToken = default)
 			where TComponent : IAsyncLifecycle
 			where TConfiguration : class, INinnelConfiguration
 		{
@@ -34,12 +34,14 @@ namespace WellEngineered.Ninnel.Middleware
 
 			return ninnelMiddlewareBuilder.UseAsync(next =>
 													{
-														return async (data, target) =>
+														return async (data, target, ct) =>
 																{
 																	TComponent newTarget;
 																	Type _ninnelMiddlewareType = ninnelMiddlewareType; // prevent closure bug
 																	TConfiguration _ninnelMiddlewareConfiguration = ninnelMiddlewareConfiguration; // prevent closure bug
 																	bool _autoWire = autoWire; // prevent closure bug
+																	string _selectorKey = selectorKey; // prevent closure bug
+																	bool _throwOnError = throwOnError; // prevent closure bug
 																	IAsyncNinnelMiddleware<TData, TComponent, TConfiguration> ninnelMiddleware;
 
 																	if (data == null)
@@ -56,7 +58,7 @@ namespace WellEngineered.Ninnel.Middleware
 
 																	// TODO - Fix this
 																	ninnelMiddleware = new DefaultComponentFactory()
-																		.CreateNinnelComponent<IAsyncNinnelMiddleware<TData, TComponent, TConfiguration>>(AssemblyDomain.Default.DependencyManager, _ninnelMiddlewareType, autoWire);
+																		.CreateNinnelComponent<IAsyncNinnelMiddleware<TData, TComponent, TConfiguration>>(AssemblyDomain.Default.DependencyManager, _ninnelMiddlewareType, autoWire, selectorKey, autoWire);
 
 																	if ((object)ninnelMiddleware == null)
 																		throw new InvalidOperationException(nameof(ninnelMiddleware));
@@ -64,10 +66,10 @@ namespace WellEngineered.Ninnel.Middleware
 																	await using (ninnelMiddleware)
 																	{
 																		ninnelMiddleware.Configuration = _ninnelMiddlewareConfiguration;
-																		await ninnelMiddleware.Configuration.ValidateFailAsync("Middleware");
-																		await ninnelMiddleware.CreateAsync();
+																		await ninnelMiddleware.Configuration.ValidateFailAsync("Middleware", ct);
+																		await ninnelMiddleware.CreateAsync(ct);
 
-																		newTarget = await ninnelMiddleware.ProcessAsync(data, target, next);
+																		newTarget = await ninnelMiddleware.ProcessAsync(data, target, next, ct);
 
 																		return newTarget;
 																	}
@@ -87,11 +89,11 @@ namespace WellEngineered.Ninnel.Middleware
 
 			return ninnelMiddlewareBuilder.UseAsync(next =>
 													{
-														return async (data, target) =>
+														return async (data, target, ct) =>
 																{
 																	TComponent newTarget;
 																	IAsyncNinnelMiddleware<TData, TComponent, TConfiguration> _ninnelMiddleware = ninnelMiddleware; // prevent closure bug
-																	CancellationToken _cancellationToken = cancellationToken; // prevent closure bug
+																	//CancellationToken _cancellationToken = cancellationToken; // prevent closure bug
 
 																	if (data == null)
 																		throw new ArgumentNullException(nameof(data));
@@ -106,14 +108,14 @@ namespace WellEngineered.Ninnel.Middleware
 																	{
 																		if (!_ninnelMiddleware.IsAsyncCreated)
 																		{
-																			await _ninnelMiddleware.Configuration.ValidateFailAsync("Middleware", _cancellationToken);
-																			await _ninnelMiddleware.CreateAsync(_cancellationToken);
+																			await _ninnelMiddleware.Configuration.ValidateFailAsync("Middleware", ct);
+																			await _ninnelMiddleware.CreateAsync(ct);
 																		}
 																		
 																		if (_ninnelMiddleware.IsAsyncDisposed)
 																			newTarget = default;
 																		else
-																			newTarget = await _ninnelMiddleware.ProcessAsync(data, target, next, _cancellationToken);
+																			newTarget = await _ninnelMiddleware.ProcessAsync(data, target, next, ct);
 
 																		return newTarget;
 																	}
