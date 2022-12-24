@@ -5,7 +5,9 @@
 
 #if ASYNC_ALL_THE_WAY_DOWN
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.Threading;
+using System.Threading.Tasks;
 
 using WellEngineered.Solder.Configuration;
 using WellEngineered.Solder.Primitives;
@@ -18,9 +20,10 @@ namespace WellEngineered.Ninnel.Primitives.Configuration
 	{
 		#region Methods/Operators
 
-		protected override IAsyncEnumerable<IMessage> CoreValidateAsync(object context, CancellationToken cancellationToken = new CancellationToken())
+		protected async override IAsyncEnumerable<IMessage> CoreValidateAsync(object context, [EnumeratorCancellation] CancellationToken cancellationToken = new CancellationToken())
 		{
-			return null;
+			await Task.CompletedTask;
+			yield break;
 		}
 
 		#endregion

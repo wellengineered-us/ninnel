@@ -70,7 +70,7 @@ namespace WellEngineered.Ninnel.Station.Textual
 			string stationContext;
 
 			stationContext = context as string;
-			
+
 			if (string.IsNullOrWhiteSpace(this.TextualFilePath))
 				yield return new Message(string.Empty, string.Format("{0} station textual file path is required.", stationContext), Severity.Error);
 

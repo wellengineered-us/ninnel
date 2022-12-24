@@ -118,7 +118,7 @@ namespace WellEngineered.Ninnel.Hosting.Tool.Defaults
 						// object instance
 						INinnelIntermediateStation<_DemoSpecification> intermediateStation = new _DemoIntermediateStation(null);
 						((IConfigurable<IUnknownNinnelConfiguration<_DemoSpecification>>)intermediateStation)
-							.Configuration = new UnknownNinnelConfiguration<_DemoSpecification>(new UnknownNinnelConfiguration());
+							.Configuration = new UnknownNinnelConfiguration<_DemoSpecification>(new UnknownNinnelConfiguration(new Dictionary<string, object>(), typeof(_DemoSpecification)));
 						
 						await intermediateStation.CreateAsync(cancellationToken);
 						processorBuilder.WithAsync<NinnelStationFrame, IAsyncNinnelStream, IUnknownNinnelConfiguration<_DemoSpecification>>(intermediateStation);

@@ -30,14 +30,21 @@
 		},
 		"test_static_cin_to_null": {
 			"commandName": "Project",
-			"commandLineArgs": "-sourcefile:_static_cin_to_null.json",
+			"commandLineArgs": "-hostconfigfile:_static_cin_to_null.json",
+			"environmentVariables": {
+				"SOLDER_HOOK_UNHANDLED_EXCEPTIONS": "false"
+			}
+		},
+		"test_static_ltf_to_ltf": {
+			"commandName": "Project",
+			"commandLineArgs": "-hostconfigfile:_static_ltf_to_ltf.json",
 			"environmentVariables": {
 				"SOLDER_HOOK_UNHANDLED_EXCEPTIONS": "false"
 			}
 		},
 		"test_static_dtf_to_dtf": {
 			"commandName": "Project",
-			"commandLineArgs": "-sourcefile:_static_dtf_to_dtf.json",
+			"commandLineArgs": "-hostconfigfile:_static_dtf_to_dtf.json",
 			"environmentVariables": {
 				"SOLDER_HOOK_UNHANDLED_EXCEPTIONS": "false"
 			}
@@ -51,7 +58,7 @@
 		},
 		"test_static_null_to_cout": {
 			"commandName": "Project",
-			"commandLineArgs": "-sourcefile:_static_null_to_cout.json",
+			"commandLineArgs": "-hostconfigfile:_static_null_to_cout.json",
 			"environmentVariables": {
 				"SOLDER_HOOK_UNHANDLED_EXCEPTIONS": "false"
 			}

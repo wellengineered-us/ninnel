@@ -13,6 +13,7 @@
 		<ProjectReference Include="..\WellEngineered.Ninnel.Middleware\WellEngineered.Ninnel.Middleware.csproj" />
 		<ProjectReference Include="..\WellEngineered.Ninnel.Primitives\WellEngineered.Ninnel.Primitives.csproj" />
 		<ProjectReference Include="..\WellEngineered.Ninnel.Transport\WellEngineered.Ninnel.Transport.csproj" />
+		<ProjectReference Include="..\WellEngineered.Ninnel.Station\WellEngineered.Ninnel.Station.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>

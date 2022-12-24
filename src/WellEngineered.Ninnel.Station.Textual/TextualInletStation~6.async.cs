@@ -4,103 +4,38 @@
 */
 
 #if ASYNC_ALL_THE_WAY_DOWN
+
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 
-using WellEngineered.Ninnel.Configuration;
 using WellEngineered.Ninnel.Material;
 using WellEngineered.Ninnel.Primitives;
 using WellEngineered.Siobhan.Model;
 using WellEngineered.Siobhan.Primitives;
+using WellEngineered.Siobhan.Textual;
 
-namespace WellEngineered.Ninnel.Station.Minimal
+namespace WellEngineered.Ninnel.Station.Textual
 {
-	public partial class ConsoleInletStation
-		: NinnelInletStation<EmptySpecification>
+	public abstract partial class TextualInletStation<
+			TTextualFieldConfiguration,
+			TTextualConfiguration,
+			TTextualFieldSpec,
+			TTextualSpec,
+			TTextualSpecification,
+			TTextualReader>
+		: NinnelInletStation<TTextualSpecification>
+		where TTextualFieldConfiguration : TextualFieldConfiguration
+		where TTextualConfiguration : TextualConfiguration<TTextualFieldConfiguration, TTextualFieldSpec, TTextualSpec>
+		where TTextualFieldSpec : ITextualFieldSpec
+		where TTextualSpec : ITextualSpec<TTextualFieldSpec>
+		where TTextualSpecification : TextualSpecification<TTextualFieldConfiguration, TTextualConfiguration, TTextualFieldSpec, TTextualSpec>, new()
+		where TTextualReader : TextualReader<TTextualFieldSpec, TTextualSpec>
 	{
 		#region Methods/Operators
-		
-		private async static ValueTask<ISiobhanSchema> GetConsoleSchemaAsync(CancellationToken cancellationToken = default)
-		{
-			long fieldCount;
-			SiobhanSchemaBuilder schemaBuilder;
-			
-			string line;
-			string[] fieldNames;
-
-			schemaBuilder = SiobhanSchemaBuilder.Create();
-			
-			await TextWriter.WriteLineAsync("Enter list of schema field names separated by pipe character: ");
-			line = await TextReader.ReadLineAsync();
-			
-			if (!string.IsNullOrEmpty(line))
-			{
-				fieldNames = line.Split('|');
-
-				if ((object)fieldNames == null || fieldNames.Length <= 0)
-				{
-					await TextWriter.WriteLineAsync("List of schema field names was invalid; using default (blank).");
-					schemaBuilder.AddField(string.Empty, typeof(string), false, true);
-				}
-				else
-				{
-					for (long fieldIndex = 0; fieldIndex < fieldNames.Length; fieldIndex++)
-					{
-						string fieldName;
-
-						fieldName = fieldNames[fieldIndex];
-
-						if (string.IsNullOrWhiteSpace(fieldName))
-							continue;
-
-						schemaBuilder.AddField(fieldName, typeof(string), false, true);
-					}
-
-					await TextWriter.WriteLineAsync(string.Format("Building KEY schema: '{0}'", string.Join(" | ", fieldNames)));
-				}
-			}
-
-			return schemaBuilder.Build();
-		}
-
-		private async IAsyncEnumerable<ISiobhanPayload> GetYieldViaConsoleAsync(ISiobhanSchema schema, [EnumeratorCancellation] CancellationToken cancellationToken = default)
-		{
-			ISiobhanPayload payload;
-			ISiobhanField[] fields;
-
-			long recordIndex;
-			string line;
-			string[] fieldValues;
-
-			if ((object)schema == null)
-				throw new ArgumentNullException(nameof(schema));
-
-			fields = schema.Fields.Values.ToArray();
-
-			recordIndex = 0;
-			while (fields.Length > 0)
-			{
-				line = await TextReader.ReadLineAsync();
-
-				if (string.IsNullOrEmpty(line))
-					yield break;
-
-				fieldValues = line.Split('|');
-
-				payload = new SiobhanPayload();
-
-				for (long fieldIndex = 0; fieldIndex < Math.Min(fieldValues.Length, fields.Length); fieldIndex++)
-					payload.Add(fields[fieldIndex].FieldName, fieldValues[fieldIndex]);
-
-				recordIndex++;
-
-				yield return payload;
-			}
-		}
 
 		protected override ValueTask CoreCreateAsync(bool creating, CancellationToken cancellationToken = new CancellationToken())
 		{
@@ -108,10 +43,18 @@ namespace WellEngineered.Ninnel.Station.Minimal
 			return base.CoreCreateAsync(creating, cancellationToken);
 		}
 
-		protected override ValueTask CoreDisposeAsync(bool disposing, CancellationToken cancellationToken = new CancellationToken())
+		protected async override ValueTask CoreDisposeAsync(bool disposing, CancellationToken cancellationToken = new CancellationToken())
 		{
-			// do nothing
-			return base.CoreDisposeAsync(disposing, cancellationToken);
+			if (disposing)
+			{
+				if ((object)this.TextualReader != null)
+				{
+					await this.TextualReader.DisposeAsync(cancellationToken);
+					this.TextualReader = null;
+				}
+			}
+
+			await base.CoreDisposeAsync(disposing, cancellationToken);
 		}
 
 		protected async override ValueTask<IAsyncNinnelStream> CoreInjectAsync(NinnelStationFrame ninnelStationFrame, CancellationToken cancellationToken = default)
@@ -138,7 +81,7 @@ namespace WellEngineered.Ninnel.Station.Minimal
 			if ((object)schema == null)
 				throw new NinnelException(nameof(schema));
 
-			payloads = this.GetYieldViaConsoleAsync(schema, cancellationToken);
+			payloads = this.GetTextualPayloadsAsync(schema, cancellationToken);
 
 			if ((object)payloads == null)
 				throw new NinnelException(nameof(payloads));
@@ -171,7 +114,7 @@ namespace WellEngineered.Ninnel.Station.Minimal
 				ninnelStationFrame.NinnelContext.LocalState.Add(this, localState);
 			}
 
-			schema = await GetConsoleSchemaAsync(cancellationToken);
+			schema = await this.GetTextualSchemaAsync(cancellationToken);
 
 			if ((object)schema == null)
 				throw new NinnelException(nameof(schema));
@@ -193,7 +136,70 @@ namespace WellEngineered.Ninnel.Station.Minimal
 				ninnelStationFrame.NinnelContext.LocalState.Remove(this);
 			}
 
-			await Task.CompletedTask;
+			if ((object)this.TextualReader != null)
+			{
+				await this.TextualReader.DisposeAsync(cancellationToken);
+				this.TextualReader = null;
+			}
+		}
+
+		private IAsyncEnumerable<ISiobhanPayload> GetTextualPayloadsAsync(ISiobhanSchema schema, CancellationToken cancellationToken = default)
+		{
+			TTextualSpecification specification;
+			TTextualSpec spec;
+
+			IAsyncEnumerable<ISiobhanPayload> payloads;
+
+			if ((object)schema == null)
+				throw new ArgumentNullException(nameof(schema));
+
+			specification = this.Configuration.Specification;
+
+			if ((object)specification == null)
+				throw new NinnelException(nameof(specification));
+
+			spec = specification.TextualConfiguration.MapToSpec();
+
+			if ((object)spec == null)
+				throw new NinnelException(nameof(spec));
+
+			payloads = this.TextualReader.ReadRecordsAsync(cancellationToken);
+
+			if ((object)payloads == null)
+				throw new NinnelException(nameof(payloads));
+
+			return payloads;
+		}
+
+		private async ValueTask<ISiobhanSchema> GetTextualSchemaAsync(CancellationToken cancellationToken = default)
+		{
+			SiobhanSchemaBuilder schemaBuilder;
+
+			TTextualSpecification specification;
+			TTextualSpec spec;
+			IAsyncEnumerable<TTextualFieldSpec> headers;
+
+			specification = this.Configuration.Specification;
+			spec = specification.TextualConfiguration.MapToSpec();
+
+			if ((object)spec == null)
+				throw new NinnelException(nameof(spec));
+
+			this.TextualReader = this.CoreCreateTextualReader(new StreamReader(File.Open(specification.TextualFilePath, FileMode.Open, FileAccess.Read, FileShare.Read)), spec);
+
+			headers = this.TextualReader.ReadHeaderFieldsAsync(cancellationToken);
+
+			if ((object)headers == null)
+				throw new NinnelException(nameof(headers));
+
+			schemaBuilder = SiobhanSchemaBuilder.Create();
+
+			await headers.ForceAsyncEnumeration(cancellationToken);
+
+			foreach (TTextualFieldSpec header in spec.HeaderSpecs)
+				schemaBuilder.AddField(header.FieldTitle, header.FieldType.ToClrType(), header.IsFieldRequired, header.IsFieldIdentity);
+
+			return schemaBuilder.Build();
 		}
 
 		#endregion

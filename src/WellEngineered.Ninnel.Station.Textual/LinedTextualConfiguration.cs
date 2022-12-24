@@ -4,11 +4,8 @@
 */
 
 using System;
-using System.Collections.Generic;
 
-using WellEngineered.Siobhan.Textual;
 using WellEngineered.Siobhan.Textual.Lined;
-using WellEngineered.Solder.Primitives;
 
 namespace WellEngineered.Ninnel.Station.Textual
 {
@@ -23,6 +20,28 @@ namespace WellEngineered.Ninnel.Station.Textual
 
 		#endregion
 
+		#region Fields/Constants
+
+		private NewLineStyle? newLineStyle;
+
+		#endregion
+
+		#region Properties/Indexers/Events
+
+		public NewLineStyle? NewLineStyle
+		{
+			get
+			{
+				return this.newLineStyle;
+			}
+			set
+			{
+				this.newLineStyle = value;
+			}
+		}
+
+		#endregion
+
 		#region Methods/Operators
 
 		public override ILinedTextualSpec MapToSpec()
@@ -31,27 +50,9 @@ namespace WellEngineered.Ninnel.Station.Textual
 
 			linedTextualSpec = new LinedTextualSpec()
 								{
-									IsFirstRecordHeader = this.FirstRecordIsHeader ?? false,
-									IsLastRecordFooter = this.LastRecordIsFooter ?? false,
-									RecordDelimiter = this.RecordDelimiter
+									ContentEncoding = this.ContentEncoding,
+									NewLineStyle = this.NewLineStyle ?? Siobhan.Textual.Lined.NewLineStyle.Auto
 								};
-
-			foreach (LinedTextualFieldConfiguration linedTextHeaderFieldConfiguration in this.TextualHeaderFieldConfigurations)
-			{
-				LinedTextualFieldSpec linedTextualFieldSpec;
-
-				linedTextualFieldSpec = new LinedTextualFieldSpec()
-										{
-											FieldTitle = linedTextHeaderFieldConfiguration.FieldTitle,
-											FieldFormat = linedTextHeaderFieldConfiguration.FieldFormat,
-											IsFieldIdentity = linedTextHeaderFieldConfiguration.IsFieldIdentity ?? false,
-											FieldType = linedTextHeaderFieldConfiguration.FieldType ?? TextualFieldType.Text,
-											IsFieldRequired = linedTextHeaderFieldConfiguration.IsFieldRequired ?? false,
-											FieldOrdinal = linedTextHeaderFieldConfiguration.FieldOrdinal ?? linedTextualSpec.TextualHeaderSpecs.Count
-										};
-
-				linedTextualSpec.TextualHeaderSpecs.Add(linedTextualFieldSpec);
-			}
 
 			return linedTextualSpec;
 		}

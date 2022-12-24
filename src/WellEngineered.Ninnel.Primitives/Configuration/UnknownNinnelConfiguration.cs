@@ -18,9 +18,10 @@ namespace WellEngineered.Ninnel.Primitives.Configuration
 		#region Constructors/Destructors
 
 		public UnknownNinnelConfiguration()
+			: base(new Dictionary<string, object>(), null)
 		{
 		}
-
+		
 		public UnknownNinnelConfiguration(IDictionary<string, object> componentSpecificConfiguration, Type componentSpecificConfigurationType)
 			: base(componentSpecificConfiguration, componentSpecificConfigurationType)
 		{

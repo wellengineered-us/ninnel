@@ -14,9 +14,16 @@
 			"DemoMode": false,
 			"PipelineAssemblyQualifiedTypeName": "WellEngineered.Ninnel.Hosting.Tool.Defaults.DefaultToolPipeline, WellEngineered.Ninnel.Hosting.Tool",
 			"InletStationConfiguration": {
-				"AssemblyQualifiedTypeName": "WellEngineered.Ninnel.Station.Minimal.NullInletStation, WellEngineered.Ninnel.Station.Minimal",
+				"AssemblyQualifiedTypeName": "WellEngineered.Ninnel.Station.Textual.LinedTextInletStation, WellEngineered.Ninnel.Station.Textual",
 				"Specification": {
-					"_": "^"
+					"_": "^",
+					"TextualFilePath": "d:\\SupplierData.csv",
+					"TextualConfiguration": {
+						"ContentEncoding": "us-ascii",
+						"NewLineStyle": "Windows",
+						"TextualHeaderFieldConfigurations": [
+						]
+					}
 				}
 			},
 			"IntermediateStationConfigurations": [
@@ -28,9 +35,16 @@
 				}
 			],
 			"OutletStationConfiguration": {
-				"AssemblyQualifiedTypeName": "WellEngineered.Ninnel.Station.Minimal.ConsoleOutletStation, WellEngineered.Ninnel.Station.Minimal",
+				"AssemblyQualifiedTypeName": "WellEngineered.Ninnel.Station.Textual.LinedTextOutletStation, WellEngineered.Ninnel.Station.Textual",
 				"Specification": {
-					"_": "^"
+					"_": "^",
+					"TextualFilePath": "d:\\_test.txt",
+					"TextualConfiguration": {
+						"ContentEncoding": "utf-8",
+						"NewLineStyle": "Unix",
+						"TextualHeaderFieldConfigurations": [
+						]
+					}
 				}
 			}
 		}

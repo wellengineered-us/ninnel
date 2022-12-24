@@ -1,13 +1,22 @@
 {
-	"_": "_",
+	"TargetEngineVersion": "0.9.0",
+	"ConfigurationVersion": "1.0.0",
+	"ComponentAutoWire": false,
+	"__HostFactoryAssemblyQualifiedTypeName": null,
+	"HostAssemblyQualifiedTypeName": "WellEngineered.Ninnel.Hosting.Tool.Defaults.DefaultToolHost, WellEngineered.Ninnel.Hosting.Tool",
+	"__ContextFactoryAssemblyQualifiedTypeName": null,
+	"ContextAssemblyQualifiedTypeName": "WellEngineered.Ninnel.Hosting.Tool.Defaults.DefaultToolContext, WellEngineered.Ninnel.Hosting.Tool",
 	"EnableDispatchLoop": true,
+	"DispatchIdleTimeSpan": "00:00:03",
 	"PipelineConfigurations": [
 		{
 			"IsEnabled": true,
-			"PipelineAqtn": "SyncPrem.Pipeline.Core.Sync.Runtime.DefaultSyncPipeline, SyncPrem.Pipeline.Core.Sync",
-			"SourceConfiguration": {
-				"StageAqtn": "SyncPrem.Pipeline.Core.Sync.Connectors.DelimitedTextSourceConnector, SyncPrem.Pipeline.Core.Sync",
-				"StageSpecificConfiguration": {
+			"DemoMode": false,
+			"PipelineAssemblyQualifiedTypeName": "WellEngineered.Ninnel.Hosting.Tool.Defaults.DefaultToolPipeline, WellEngineered.Ninnel.Hosting.Tool",
+			"InletStationConfiguration": {
+				"AssemblyQualifiedTypeName": "WellEngineered.Ninnel.Station.Textual.DelimitedTextInletStation, WellEngineered.Ninnel.Station.Textual",
+				"Specification": {
+					"_": "^",
 					"TextualFilePath": "d:\\SupplierData.csv",
 					"TextualConfiguration": {
 						"FirstRecordIsHeader": true,
@@ -65,14 +74,19 @@
 					}
 				}
 			},
-			"ProcessorConfigurations": [
+			"IntermediateStationConfigurations": [
+				{
+					"AssemblyQualifiedTypeName": "WellEngineered.Ninnel.Station.Minimal.NullIntermediateStation, WellEngineered.Ninnel.Station.Minimal",
+					"Specification": {
+						"_": "^"
+					}
+				}
 			],
-			"DestinationConfiguration": {
-				"StageAqtn": "SyncPrem.Pipeline.Core.Sync.Connectors.DelimitedTextDestinationConnector, SyncPrem.Pipeline.Core.Sync",
-				"StageSpecificConfiguration": {
+			"OutletStationConfiguration": {
+				"AssemblyQualifiedTypeName": "WellEngineered.Ninnel.Station.Textual.DelimitedTextOutletStation, WellEngineered.Ninnel.Station.Textual",
+				"Specification": {
+					"_": "^",
 					"TextualFilePath": "d:\\test",
-					/*Public_Banking_Data.csv*/
-
 					"TextualConfiguration": {
 						"FirstRecordIsHeader": true,
 						"LastRecordIsFooter": false,

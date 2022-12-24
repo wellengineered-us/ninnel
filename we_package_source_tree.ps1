@@ -18,7 +18,7 @@ $nupkg_files = $null # can be explicitly set here or $null for auto-discovery
 
 if ($nupkg_files -eq $null)
 {
-	$nupkg_files = Get-ChildItem -Recurse "$src_dir_path\*.nupkg" | Select-Object -Property Name, Directory, FullName
+	$nupkg_files = Get-ChildItem -Recurse "$src_dir_path\*.symbols.nupkg" | Select-Object -Property Name, Directory, FullName
 
 	if ($nupkg_files -eq $null)
 	{ echo "An error occurred during the operation (NuGet Package file discovery)."; return; }

@@ -10,7 +10,6 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 
-using WellEngineered.Siobhan.Textual;
 using WellEngineered.Siobhan.Textual.Delimited;
 using WellEngineered.Solder.Primitives;
 
@@ -23,17 +22,17 @@ namespace WellEngineered.Ninnel.Station.Textual
 
 		protected async override IAsyncEnumerable<IMessage> CoreValidateAsync(object context, [EnumeratorCancellation] CancellationToken cancellationToken = new CancellationToken())
 		{
-			var childMessages =  base.CoreValidateAsync(context, cancellationToken);
+			var childMessages = base.CoreValidateAsync(context, cancellationToken);
 
 			await foreach (var childMessage in childMessages.WithCancellation(cancellationToken))
 			{
 				yield return childMessage;
 			}
-			
+
 			if (string.IsNullOrEmpty(this.RecordDelimiter))
 				yield return new Message(string.Empty, string.Format("{0} textual (delimited) record delimiter is required.", context), Severity.Error);
-             
-             if (string.IsNullOrEmpty(this.FieldDelimiter))
+
+			if (string.IsNullOrEmpty(this.FieldDelimiter))
 				yield return new Message(string.Empty, string.Format("{0} textual (delimited) field delimiter is required.", context), Severity.Error);
 		}
 

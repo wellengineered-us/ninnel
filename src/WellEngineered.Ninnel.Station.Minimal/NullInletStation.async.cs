@@ -136,6 +136,7 @@ namespace WellEngineered.Ninnel.Station.Minimal
 
 			stream = ninnelStationFrame.NinnelContext.CreateStreamAsync(records);
 
+			await Task.CompletedTask;
 			return stream;
 		}
 
